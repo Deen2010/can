@@ -9,22 +9,63 @@ import {
   getListAppointmentsQueryKey,
   getGetAvailabilityQueryKey,
 } from "@workspace/api-client-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useLocation, useSearch, Link } from "wouter";
 import { format, addDays, startOfToday, parseISO } from "date-fns";
 import { de } from "date-fns/locale";
 import { useForm } from "react-hook-form";
 import { useQueryClient } from "@tanstack/react-query";
-import { ScissorIcon } from "@/components/scissor-icon";
+import { ScissorIcon, BarberPoleIcon } from "@/components/scissor-icon";
 import { useAuth } from "@/lib/auth";
 
 interface ContactForm {
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
   notes?: string;
-  password?: string;
-  createAccount?: boolean;
+}
+
+function LoginGate({ nextPath }: { nextPath: string }) {
+  const loginHref = `/login?next=${encodeURIComponent(nextPath)}`;
+
+  return (
+    <PageTransition className="flex-1 max-w-3xl mx-auto w-full px-6 py-24">
+      <div className="border-2 border-foreground bg-background relative overflow-hidden">
+        <div className="h-3 barber-stripes-thin border-b-2 border-foreground" />
+        <div className="p-10 md:p-14 text-center">
+          <BarberPoleIcon className="w-6 h-16 text-foreground mx-auto mb-6" />
+          <div className="text-[10px] uppercase tracking-[0.35em] text-primary font-bold mb-3">
+            Termin buchen
+          </div>
+          <h1 className="font-display text-4xl md:text-5xl tracking-tight mb-4">
+            Bitte einloggen
+          </h1>
+          <p className="text-sm md:text-base text-muted-foreground max-w-md mx-auto leading-relaxed mb-10">
+            Damit dein Termin verbindlich gespeichert wird und du ihn jederzeit
+            wiederfindest, brauchen wir dich kurz angemeldet. Dauert keine
+            Minute.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link
+              href={loginHref}
+              data-testid="link-gate-login"
+              className="group inline-flex items-center justify-center gap-3 bg-foreground text-background px-8 py-4 font-bold text-xs uppercase tracking-[0.25em] hover:bg-primary transition-colors border-2 border-foreground"
+            >
+              Einloggen
+              <span className="group-hover:translate-x-1 transition-transform">
+                →
+              </span>
+            </Link>
+            <Link
+              href={loginHref}
+              data-testid="link-gate-register"
+              className="inline-flex items-center justify-center gap-3 bg-background text-foreground px-8 py-4 font-bold text-xs uppercase tracking-[0.25em] border-2 border-foreground hover:bg-secondary transition-colors"
+            >
+              Konto anlegen
+            </Link>
+          </div>
+        </div>
+        <div className="h-3 barber-stripes-thin border-t-2 border-foreground" />
+      </div>
+    </PageTransition>
+  );
 }
 
 export default function Buchen() {
@@ -33,14 +74,12 @@ export default function Buchen() {
   const queryParams = new URLSearchParams(searchString);
 
   const queryClient = useQueryClient();
-  const { customer, register: registerAccount } = useAuth();
+  const { customer, isLoading: authLoading } = useAuth();
 
   const initialService = queryParams.get("service");
-  const initialStylist = queryParams.get("stylist");
 
   const [step, setStep] = useState(1);
   const [serviceId, setServiceId] = useState<string | null>(initialService);
-  const [stylistId, setStylistId] = useState<string | null>(initialStylist);
   const [dateStr, setDateStr] = useState<string | null>(null);
   const [timeStr, setTimeStr] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -49,6 +88,10 @@ export default function Buchen() {
   const { data: stylistsData } = useListStylists();
   const services = Array.isArray(servicesData) ? servicesData : [];
   const stylists = Array.isArray(stylistsData) ? stylistsData : [];
+
+  // Single-barber shop: always book with the only stylist available.
+  const stylistId = stylists[0]?.id ?? null;
+  const selectedStylist = stylists[0] ?? null;
 
   const { data: availability } = useGetAvailability(
     { serviceId: serviceId!, stylistId: stylistId!, date: dateStr! },
@@ -60,68 +103,23 @@ export default function Buchen() {
   const {
     register,
     handleSubmit,
-    watch,
-    formState: { errors },
   } = useForm<ContactForm>({
-    defaultValues: {
-      customerName: customer?.name ?? "",
-      customerEmail: customer?.email ?? "",
-      customerPhone: customer?.phone ?? "",
-      notes: "",
-      createAccount: false,
-      password: "",
-    },
+    defaultValues: { notes: "" },
   });
 
-  const wantsAccount = watch("createAccount");
-
   const onSubmit = async (data: ContactForm) => {
-    if (!serviceId || !stylistId || !timeStr) return;
+    if (!serviceId || !stylistId || !timeStr || !customer) return;
     setSubmitError(null);
 
     try {
-      if (!customer && data.createAccount) {
-        if (!data.password || data.password.length < 6) {
-          setSubmitError("Passwort min. 6 Zeichen für ein Konto");
-          return;
-        }
-        try {
-          await registerAccount({
-            email: data.customerEmail,
-            password: data.password,
-            name: data.customerName,
-            phone: data.customerPhone,
-          });
-        } catch (err) {
-          const msg = err instanceof Error ? err.message : "";
-          if (msg.includes("409")) {
-            setSubmitError(
-              "E-Mail ist bereits registriert. Bitte einloggen oder Häkchen entfernen.",
-            );
-            return;
-          }
-          throw err;
-        }
-      }
-
-      const payload = customer
-        ? {
-            serviceId,
-            stylistId,
-            startsAt: timeStr,
-            notes: data.notes || undefined,
-          }
-        : {
-            customerName: data.customerName,
-            customerEmail: data.customerEmail,
-            customerPhone: data.customerPhone,
-            serviceId,
-            stylistId,
-            startsAt: timeStr,
-            notes: data.notes || undefined,
-          };
-
-      const res = await createAppointment.mutateAsync({ data: payload });
+      const res = await createAppointment.mutateAsync({
+        data: {
+          serviceId,
+          stylistId,
+          startsAt: timeStr,
+          notes: data.notes || undefined,
+        },
+      });
 
       queryClient.invalidateQueries({ queryKey: getGetDashboardSummaryQueryKey() });
       queryClient.invalidateQueries({ queryKey: getGetUpcomingAppointmentsQueryKey() });
@@ -137,23 +135,43 @@ export default function Buchen() {
     }
   };
 
+  // If a service was preselected via query param and step is still 1, jump forward
+  useEffect(() => {
+    if (serviceId && step === 1 && services.find((s) => s.id === serviceId)) {
+      setStep(2);
+    }
+  }, [serviceId, services, step]);
+
   const today = startOfToday();
   const dates = useMemo(() => {
     return Array.from({ length: 60 }).map((_, i) => addDays(today, i));
   }, [today]);
 
   const selectedService = services.find((s) => s.id === serviceId);
-  const selectedStylist = stylists.find((s) => s.id === stylistId);
+
+  // Auth gate
+  if (authLoading) {
+    return (
+      <PageTransition className="flex-1 max-w-3xl mx-auto w-full px-6 py-32 text-center">
+        <div className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+          Lade...
+        </div>
+      </PageTransition>
+    );
+  }
+
+  if (!customer) {
+    return <LoginGate nextPath="/buchen" />;
+  }
 
   return (
     <PageTransition className="flex-1 max-w-4xl mx-auto w-full px-6 py-24">
-      {/* Stepper */}
+      {/* Stepper — 3 steps now (no Friseur step) */}
       <div className="flex items-center justify-between border-b border-border pb-6 mb-16">
         {[
           { num: 1, label: "Leistung" },
-          { num: 2, label: "Friseur" },
-          { num: 3, label: "Zeit" },
-          { num: 4, label: "Details" },
+          { num: 2, label: "Zeit" },
+          { num: 3, label: "Details" },
         ].map((s) => (
           <div
             key={s.num}
@@ -174,6 +192,7 @@ export default function Buchen() {
                 {services.map((service) => (
                   <button
                     key={service.id}
+                    data-testid={`button-service-${service.id}`}
                     onClick={() => {
                       setServiceId(service.id);
                       setStep(2);
@@ -201,38 +220,7 @@ export default function Buchen() {
               <button
                 onClick={() => setStep(1)}
                 className="text-xs uppercase tracking-widest text-muted-foreground mb-4 hover:text-primary"
-              >
-                ← Zurück
-              </button>
-              <h2 className="font-serif text-4xl mb-8">Friseur wählen</h2>
-              <div className="grid gap-px bg-border border border-border">
-                {stylists.map((stylist) => (
-                  <button
-                    key={stylist.id}
-                    onClick={() => {
-                      setStylistId(stylist.id);
-                      setStep(3);
-                    }}
-                    className={`w-full text-left p-6 bg-background hover:bg-secondary transition-colors flex gap-6 items-center ${stylistId === stylist.id ? "bg-secondary" : ""}`}
-                  >
-                    <div className="w-16 h-16 bg-secondary border border-border overflow-hidden shrink-0">
-                      <img src={stylist.imageUrl || ""} alt="" className="w-full h-full object-cover grayscale" />
-                    </div>
-                    <div>
-                      <h3 className="font-serif text-2xl font-bold mb-1">{stylist.name}</h3>
-                      <p className="text-xs uppercase tracking-widest text-muted-foreground">{stylist.role}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </PageTransition>
-          )}
-
-          {step === 3 && (
-            <PageTransition>
-              <button
-                onClick={() => setStep(2)}
-                className="text-xs uppercase tracking-widest text-muted-foreground mb-4 hover:text-primary"
+                data-testid="button-back-to-service"
               >
                 ← Zurück
               </button>
@@ -247,6 +235,7 @@ export default function Buchen() {
                     return (
                       <button
                         key={dateString}
+                        data-testid={`button-date-${dateString}`}
                         onClick={() => {
                           setDateStr(dateString);
                           setTimeStr(null);
@@ -275,10 +264,11 @@ export default function Buchen() {
                         return (
                           <button
                             key={i}
+                            data-testid={`button-slot-${i}`}
                             disabled={!isAvailable}
                             onClick={() => {
                               setTimeStr(slot.startsAt);
-                              setStep(4);
+                              setStep(3);
                             }}
                             className={`p-4 text-center text-sm transition-colors ${
                               !isAvailable
@@ -304,132 +294,33 @@ export default function Buchen() {
             </PageTransition>
           )}
 
-          {step === 4 && (
+          {step === 3 && (
             <PageTransition>
               <button
-                onClick={() => setStep(3)}
+                onClick={() => setStep(2)}
                 className="text-xs uppercase tracking-widest text-muted-foreground mb-4 hover:text-primary"
+                data-testid="button-back-to-time"
               >
                 ← Zurück
               </button>
 
-              {customer ? (
-                <>
-                  <h2 className="font-serif text-4xl mb-2">Bestätigen</h2>
-                  <p className="text-sm text-muted-foreground mb-8">
-                    Eingeloggt als{" "}
-                    <span className="text-foreground font-medium">{customer.name}</span> ·{" "}
-                    {customer.email}
-                  </p>
-                </>
-              ) : (
-                <>
-                  <h2 className="font-serif text-4xl mb-2">Kontaktdaten</h2>
-                  <p className="text-xs uppercase tracking-widest text-muted-foreground mb-8">
-                    Schon Kunde?{" "}
-                    <Link href="/login?next=/buchen" className="text-primary hover:underline">
-                      Einloggen
-                    </Link>
-                  </p>
-                </>
-              )}
+              <h2 className="font-serif text-4xl mb-2">Bestätigen</h2>
+              <p className="text-sm text-muted-foreground mb-8">
+                Eingeloggt als{" "}
+                <span className="text-foreground font-medium">{customer.name}</span> ·{" "}
+                {customer.email}
+              </p>
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                {!customer && (
-                  <>
-                    <div>
-                      <label className="text-xs uppercase tracking-widest block mb-2">Name</label>
-                      <input
-                        {...register("customerName", { required: "Name fehlt", minLength: 1 })}
-                        className="w-full bg-input border-b border-border focus:border-primary outline-none px-4 py-3 font-sans transition-colors"
-                        placeholder="Vor- und Nachname"
-                      />
-                      {errors.customerName && (
-                        <span className="text-xs text-destructive mt-1 block">
-                          {errors.customerName.message}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-6">
-                      <div>
-                        <label className="text-xs uppercase tracking-widest block mb-2">Email</label>
-                        <input
-                          {...register("customerEmail", {
-                            required: "E-Mail fehlt",
-                            pattern: { value: /.+@.+\..+/, message: "Ungültige E-Mail" },
-                          })}
-                          className="w-full bg-input border-b border-border focus:border-primary outline-none px-4 py-3 font-sans transition-colors"
-                          placeholder="email@example.com"
-                          type="email"
-                        />
-                        {errors.customerEmail && (
-                          <span className="text-xs text-destructive mt-1 block">
-                            {errors.customerEmail.message}
-                          </span>
-                        )}
-                      </div>
-                      <div>
-                        <label className="text-xs uppercase tracking-widest block mb-2">Telefon</label>
-                        <input
-                          {...register("customerPhone", { required: "Telefon fehlt", minLength: 3 })}
-                          className="w-full bg-input border-b border-border focus:border-primary outline-none px-4 py-3 font-sans transition-colors"
-                          placeholder="+49 ..."
-                          type="tel"
-                        />
-                        {errors.customerPhone && (
-                          <span className="text-xs text-destructive mt-1 block">
-                            {errors.customerPhone.message}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </>
-                )}
-
                 <div>
                   <label className="text-xs uppercase tracking-widest block mb-2">Notizen (Optional)</label>
                   <textarea
                     {...register("notes")}
+                    data-testid="input-notes"
                     className="w-full bg-input border-b border-border focus:border-primary outline-none px-4 py-3 font-sans transition-colors min-h-[100px] resize-none"
                     placeholder="Besondere Wünsche..."
                   />
                 </div>
-
-                {!customer && (
-                  <div className="border border-border bg-secondary p-4">
-                    <label className="flex items-start gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        {...register("createAccount")}
-                        className="mt-1 accent-primary"
-                      />
-                      <div>
-                        <div className="text-xs uppercase tracking-widest font-medium">
-                          Konto anlegen für schnelles Buchen
-                        </div>
-                        <div className="text-xs text-muted-foreground mt-1">
-                          Beim nächsten Mal nur einmal einloggen — keine Kontaktdaten neu eintippen.
-                        </div>
-                      </div>
-                    </label>
-                    {wantsAccount && (
-                      <div className="mt-4">
-                        <label className="text-xs uppercase tracking-widest block mb-2">
-                          Passwort wählen
-                        </label>
-                        <input
-                          {...register("password")}
-                          type="password"
-                          minLength={6}
-                          className="w-full bg-background border-b border-border focus:border-primary outline-none px-4 py-3 transition-colors"
-                          placeholder="Min. 6 Zeichen"
-                          autoComplete="new-password"
-                        />
-                      </div>
-                    )}
-                  </div>
-                )}
 
                 {submitError && (
                   <div className="text-xs text-destructive border border-destructive/30 bg-destructive/5 px-3 py-2">
@@ -440,13 +331,14 @@ export default function Buchen() {
                 <button
                   type="submit"
                   disabled={createAppointment.isPending}
+                  data-testid="button-submit-booking"
                   className="w-full bg-destructive text-white uppercase tracking-widest text-sm font-medium py-4 hover:bg-destructive/90 transition-colors disabled:opacity-50"
                 >
                   {createAppointment.isPending ? "Wird gebucht..." : "Verbindlich buchen"}
                 </button>
 
                 <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest">
-                  Eine Bestätigungs-Mail geht direkt an dich raus.
+                  Du findest deinen Termin danach unter „Meine Termine".
                 </p>
               </form>
             </PageTransition>
@@ -481,12 +373,12 @@ export default function Buchen() {
 
               <div>
                 <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
-                  Stylist:in
+                  Barber
                 </div>
                 {selectedStylist ? (
                   <div className="font-serif text-lg">{selectedStylist.name}</div>
                 ) : (
-                  <div className="text-hint italic">Noch nicht gewählt</div>
+                  <div className="text-hint italic">–</div>
                 )}
               </div>
 
@@ -509,7 +401,7 @@ export default function Buchen() {
               </div>
             </div>
 
-            {selectedService && selectedStylist && timeStr && (
+            {selectedService && timeStr && (
               <div className="mt-8 pt-6 border-t border-border">
                 <div className="flex justify-between items-center">
                   <span className="text-xs uppercase tracking-widest">Total</span>

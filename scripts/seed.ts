@@ -1,78 +1,24 @@
 import { db, servicesTable, stylistsTable } from "@workspace/db";
-import { sql } from "drizzle-orm";
+import { sql, notInArray } from "drizzle-orm";
 
 const services = [
   {
-    id: "svc-classic-cut",
-    name: "Classic Cut",
+    id: "svc-haircut",
+    name: "Haircut",
     category: "Haarschnitt",
     description:
       "Klassischer Schnitt nach Wunsch — gewaschen, geschnitten, gestylt. Inkl. Nackenrasur.",
-    durationMinutes: 45,
-    priceCents: 2800,
-  },
-  {
-    id: "svc-skin-fade",
-    name: "Skin Fade",
-    category: "Haarschnitt",
-    description:
-      "Sauberer Übergang von Haut zu Deckhaar. Präzise mit Maschine und Klinge gearbeitet.",
-    durationMinutes: 60,
-    priceCents: 3500,
-  },
-  {
-    id: "svc-buzz-cut",
-    name: "Buzz Cut",
-    category: "Haarschnitt",
-    description:
-      "Komplett kurz, eine Länge. Schnell, sauber, klassisch.",
-    durationMinutes: 25,
-    priceCents: 1800,
-  },
-  {
-    id: "svc-kids-cut",
-    name: "Kids Cut",
-    category: "Haarschnitt",
-    description:
-      "Haarschnitt für Kinder bis 12 Jahre. In Ruhe, mit Geduld.",
     durationMinutes: 30,
-    priceCents: 2000,
+    priceCents: 500,
   },
   {
-    id: "svc-beard-trim",
-    name: "Beard Trim",
-    category: "Bart",
-    description:
-      "Bart in Form — Konturen mit der Klinge geschnitten, mit Bartöl gepflegt.",
-    durationMinutes: 30,
-    priceCents: 1800,
-  },
-  {
-    id: "svc-hot-shave",
-    name: "Hot Towel Shave",
-    category: "Bart",
-    description:
-      "Klassische Nassrasur mit heißen Tüchern und offener Klinge. Das volle Programm.",
-    durationMinutes: 45,
-    priceCents: 3200,
-  },
-  {
-    id: "svc-cut-beard",
-    name: "Cut & Beard",
+    id: "svc-haircut-bart",
+    name: "Haircut & Bart",
     category: "Kombi",
     description:
-      "Haarschnitt plus Bartpflege im Paket. Alles in einer Sitzung.",
-    durationMinutes: 75,
-    priceCents: 4500,
-  },
-  {
-    id: "svc-the-works",
-    name: "The Works",
-    category: "Kombi",
-    description:
-      "Schnitt, Hot Towel Shave und Styling. Das volle MAINUSCH-Erlebnis.",
-    durationMinutes: 90,
-    priceCents: 5800,
+      "Haarschnitt plus Bartpflege im Paket. Konturen mit der Klinge, alles in einer Sitzung.",
+    durationMinutes: 45,
+    priceCents: 700,
   },
 ];
 
@@ -84,16 +30,7 @@ const stylists = [
     bio: "Can ist der Mann hinter MAINUSCH. Klassische Schnitte, präzise Fades und ehrliche Bartpflege — seit Jahren am Stuhl, mit Auge für jedes Detail.",
     imageUrl:
       "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=800&q=80",
-    specialties: ["Skin Fade", "Hot Towel Shave", "Classic Cut"],
-  },
-  {
-    id: "stylist-deniz",
-    name: "Deniz",
-    role: "Senior Barber",
-    bio: "Deniz steht für moderne Schnitte und detailverliebte Bartkonturen. Nimmt sich Zeit, fragt nach, trifft den Look.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=800&q=80",
-    specialties: ["Beard Trim", "Skin Fade", "Cut & Beard"],
+    specialties: ["Haircut", "Bart", "Hot Towel"],
   },
 ];
 
@@ -114,7 +51,13 @@ async function main() {
         },
       });
   }
-  console.log(`  ✓ ${services.length} services upserted`);
+  await db.delete(servicesTable).where(
+    notInArray(
+      servicesTable.id,
+      services.map((s) => s.id),
+    ),
+  );
+  console.log(`  ✓ ${services.length} services upserted (others removed)`);
 
   console.log("→ Seeding stylists...");
   for (const st of stylists) {
@@ -132,7 +75,13 @@ async function main() {
         },
       });
   }
-  console.log(`  ✓ ${stylists.length} stylists upserted`);
+  await db.delete(stylistsTable).where(
+    notInArray(
+      stylistsTable.id,
+      stylists.map((s) => s.id),
+    ),
+  );
+  console.log(`  ✓ ${stylists.length} stylists upserted (others removed)`);
 
   const counts = await db.execute(
     sql`SELECT (SELECT COUNT(*) FROM services) AS services, (SELECT COUNT(*) FROM stylists) AS stylists`,
