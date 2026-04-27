@@ -6,6 +6,7 @@ import detailImg from "@/assets/salon-detail-1.png";
 import workCurly from "@assets/WhatsApp_Image_2026-04-27_at_4.10.09_PM_1777299203934.jpeg";
 import workBeard from "@assets/WhatsApp_Image_2026-04-27_at_4.10.08_PM_1777299203936.jpeg";
 import workFade from "@assets/WhatsApp_Image_2026-04-27_at_4.10.09_PM_(1)_1777299203937.jpeg";
+import goodVibes from "@assets/WhatsApp_Image_2026-04-27_at_4.15.21_PM_1777299354495.jpeg";
 
 export default function Home() {
   return (
@@ -14,11 +15,11 @@ export default function Home() {
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-8 max-w-xl">
             <h1 className="font-serif text-5xl md:text-7xl leading-[1.1] text-foreground">
-              <strong className="font-bold block mb-2">Uncut</strong>
-              <em className="italic text-primary block">by appointment</em>
+              <strong className="font-bold block mb-2">Schnitt</strong>
+              <em className="italic text-primary block">nach Termin</em>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-md">
-              A gallery space for hair. Editorial minimalism, quiet confidence, and unhurried craft.
+              Ein Stuhl, ein Friseur, volle Aufmerksamkeit. Präzise Schnitte, ehrliche Preise, gute Vibes.
             </p>
             <div className="pt-4">
               <Link 
@@ -31,12 +32,13 @@ export default function Home() {
           </div>
           <div className="relative aspect-[4/5] md:aspect-square w-full max-w-md ml-auto">
             <img 
-              src={interiorImg} 
-              alt="Salon Interior" 
+              src={goodVibes} 
+              alt="Can mit Kunde im Salon" 
               className="w-full h-full object-cover border border-border"
             />
-            <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-secondary border border-border flex items-center justify-center">
-              <ScissorIcon className="w-12 h-12 text-border" />
+            <div className="absolute -bottom-6 -left-6 px-4 py-3 bg-background border border-border">
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Im Salon</div>
+              <div className="font-serif italic text-primary text-lg leading-tight">good vibes only</div>
             </div>
           </div>
         </div>
@@ -46,10 +48,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 py-24">
           <div className="flex items-end justify-between mb-12 gap-8">
             <h2 className="font-serif text-3xl md:text-5xl">
-              <strong className="font-bold">Recent</strong> <em className="italic text-primary">work</em>
+              <strong className="font-bold">Aktuelle</strong> <em className="italic text-primary">Arbeiten</em>
             </h2>
             <div className="text-xs uppercase tracking-widest text-muted-foreground hidden md:block">
-              Cuts by Can
+              Schnitte von Can
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -58,7 +60,7 @@ export default function Home() {
                 <img src={workCurly} alt="Curly Cut von Can" className="w-full h-full object-cover" />
               </div>
               <figcaption className="flex items-baseline justify-between text-xs uppercase tracking-widest text-muted-foreground">
-                <span>Curly · Tapered Nape</span>
+                <span>Locken · Tapered</span>
                 <span>01</span>
               </figcaption>
             </figure>
@@ -81,6 +83,16 @@ export default function Home() {
               </figcaption>
             </figure>
           </div>
+          <div className="mt-10 flex justify-end">
+            <a
+              href="https://instagram.com/can.v912"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block uppercase tracking-widest text-xs font-medium border-b border-border pb-1 hover:border-primary hover:text-primary transition-colors"
+            >
+              Mehr auf Instagram · @can.v912
+            </a>
+          </div>
         </div>
       </section>
 
@@ -89,13 +101,13 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-12">
             <div className="space-y-6">
               <h2 className="font-serif text-3xl">
-                <strong className="font-bold">Studio</strong> <em className="italic">ethos</em>
+                <strong className="font-bold">Unser</strong> <em className="italic">Anspruch</em>
               </h2>
               <p className="text-muted-foreground">
-                No rush. No clutter. Just precise cuts and considered color in a space designed for clarity.
+                Kein Stress, keine Hektik. Nur saubere Schnitte und Zeit für jeden Kunden.
               </p>
               <Link href="/services" className="inline-block uppercase tracking-widest text-xs font-medium border-b border-border pb-1 hover:border-primary hover:text-primary transition-colors">
-                Explore Services
+                Leistungen ansehen
               </Link>
             </div>
             <div className="md:col-span-2 grid sm:grid-cols-2 gap-6">
@@ -103,11 +115,11 @@ export default function Home() {
                <div className="bg-background border border-border p-8 flex flex-col justify-between aspect-[4/3]">
                  <ScissorIcon className="w-8 h-8 text-primary" />
                  <div>
-                   <div className="text-xs uppercase tracking-widest text-muted-foreground mb-2">The team</div>
-                   <h3 className="font-serif text-2xl font-bold">Stylist:innen</h3>
+                   <div className="text-xs uppercase tracking-widest text-muted-foreground mb-2">Dein Friseur</div>
+                   <h3 className="font-serif text-2xl font-bold">Can</h3>
                    <div className="mt-6">
                      <Link href="/stylists" className="inline-block uppercase tracking-widest text-xs font-medium text-primary hover:text-foreground transition-colors">
-                       View Directory
+                       Mehr erfahren
                      </Link>
                    </div>
                  </div>

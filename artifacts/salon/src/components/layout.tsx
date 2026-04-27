@@ -11,9 +11,9 @@ export function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
 
   const navLinks = [
-    { href: "/", label: "Home" },
-    { href: "/services", label: "Services" },
-    { href: "/stylists", label: "Stylist:innen" },
+    { href: "/", label: "Start" },
+    { href: "/services", label: "Leistungen" },
+    { href: "/stylists", label: "Friseur" },
     { href: "/buchen", label: "Termin buchen" },
     { href: "/admin", label: "Verwaltung" },
   ];
@@ -59,11 +59,20 @@ export function Layout({ children }: LayoutProps) {
           <div className="flex items-center gap-4">
             <ScissorIcon className="w-5 h-5 text-border" />
             <span className="font-serif text-xl">
-              <strong className="font-bold">Salon</strong>
+              <strong className="font-bold">Salon</strong>{" "}
+              <em className="italic text-muted-foreground">studio</em>
             </span>
           </div>
-          <div className="text-sm text-muted-foreground uppercase tracking-widest">
-            © {new Date().getFullYear()} Salon Studio. Editorial Hair.
+          <a
+            href="https://instagram.com/can.v912"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs uppercase tracking-widest text-foreground hover:text-primary transition-colors"
+          >
+            Instagram · @can.v912
+          </a>
+          <div className="text-xs text-muted-foreground uppercase tracking-widest">
+            © {new Date().getFullYear()} Salon · Schnitt von Can
           </div>
         </div>
       </footer>

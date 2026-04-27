@@ -89,8 +89,8 @@ export default function Buchen() {
       {/* Stepper */}
       <div className="flex items-center justify-between border-b border-border pb-6 mb-16">
         {[
-          { num: 1, label: "Service" },
-          { num: 2, label: "Stylist:in" },
+          { num: 1, label: "Leistung" },
+          { num: 2, label: "Friseur" },
           { num: 3, label: "Zeit" },
           { num: 4, label: "Details" }
         ].map((s) => (
@@ -107,7 +107,7 @@ export default function Buchen() {
           {/* STEP 1: SERVICE */}
           {step === 1 && (
             <PageTransition>
-              <h2 className="font-serif text-4xl mb-8">Service wählen</h2>
+              <h2 className="font-serif text-4xl mb-8">Leistung wählen</h2>
               <div className="grid gap-px bg-border border border-border">
                 {services?.map(service => (
                   <button
@@ -138,7 +138,7 @@ export default function Buchen() {
           {step === 2 && (
             <PageTransition>
               <button onClick={() => setStep(1)} className="text-xs uppercase tracking-widest text-muted-foreground mb-4 hover:text-primary">← Zurück</button>
-              <h2 className="font-serif text-4xl mb-8">Stylist:in wählen</h2>
+              <h2 className="font-serif text-4xl mb-8">Friseur wählen</h2>
               <div className="grid gap-px bg-border border border-border">
                 {stylists?.map(stylist => (
                   <button

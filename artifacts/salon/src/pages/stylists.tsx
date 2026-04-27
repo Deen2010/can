@@ -16,10 +16,10 @@ export default function Stylists() {
     <PageTransition className="flex-1 max-w-7xl mx-auto w-full px-6 py-24">
       <header className="mb-16">
         <h1 className="font-serif text-5xl md:text-6xl mb-6">
-          <strong className="font-bold">Studio</strong> <em className="italic">directory</em>
+          <strong className="font-bold">Dein</strong> <em className="italic">Friseur</em>
         </h1>
         <p className="text-muted-foreground max-w-xl text-lg">
-          The team. Specialists in precision cutting, creative color, and editorial styling.
+          Ein Stuhl, ein Friseur, volle Aufmerksamkeit. Spezialisiert auf saubere Schnitte und Bartpflege.
         </p>
       </header>
 
@@ -67,13 +67,24 @@ export default function Stylists() {
                   {stylist.bio}
                 </p>
                 <div className="space-y-3">
-                  <div className="text-[10px] uppercase tracking-widest text-primary">Specialties</div>
+                  <div className="text-[10px] uppercase tracking-widest text-primary">Spezialgebiete</div>
                   <div className="flex flex-wrap gap-2">
                     {stylist.specialties.map(spec => (
                       <span key={spec} className="text-xs border border-border px-2 py-1 bg-secondary text-foreground">
                         {spec}
                       </span>
                     ))}
+                  </div>
+                  <div className="pt-3">
+                    <a
+                      href="https://instagram.com/can.v912"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="inline-block text-[10px] uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      Instagram · @can.v912
+                    </a>
                   </div>
                 </div>
                 <div className="mt-8 pt-6 border-t border-border flex items-center justify-between">

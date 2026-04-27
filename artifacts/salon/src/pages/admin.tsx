@@ -57,9 +57,9 @@ export default function Admin() {
     <PageTransition className="flex-1 max-w-7xl mx-auto w-full px-6 py-24">
       <header className="mb-16">
         <h1 className="font-serif text-5xl mb-2">
-          <strong className="font-bold">Studio</strong> <em className="italic">Verwaltung</em>
+          <strong className="font-bold">Salon</strong> <em className="italic">Verwaltung</em>
         </h1>
-        <p className="text-muted-foreground uppercase tracking-widest text-xs">Back Office</p>
+        <p className="text-muted-foreground uppercase tracking-widest text-xs">Interner Bereich</p>
       </header>
 
       {/* KPIs */}

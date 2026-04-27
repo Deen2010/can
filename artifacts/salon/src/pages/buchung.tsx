@@ -68,14 +68,14 @@ export default function Buchung() {
             {isCancelled ? (
               <><strong className="font-bold text-destructive">Termin</strong> <em className="italic">storniert</em></>
             ) : (
-              <><strong className="font-bold">See you</strong> <em className="italic">soon.</em></>
+              <><strong className="font-bold">Bis</strong> <em className="italic">bald.</em></>
             )}
           </h1>
           
           <p className="text-muted-foreground mb-12 max-w-md">
             {isCancelled 
-              ? "Ihr Termin wurde erfolgreich abgesagt. Wir hoffen, Sie bald wieder bei uns begrüßen zu dürfen." 
-              : `Hallo ${appointment.customerName.split(" ")[0]}, Ihr Termin bei ${appointment.stylist?.name} ist bestätigt. Wir freuen uns auf Sie.`
+              ? "Dein Termin wurde erfolgreich abgesagt. Wir hoffen, dich bald wieder bei uns zu sehen." 
+              : `Hi ${appointment.customerName.split(" ")[0]}, dein Termin bei ${appointment.stylist?.name} ist eingebucht. Wir freuen uns auf dich.`
             }
           </p>
 

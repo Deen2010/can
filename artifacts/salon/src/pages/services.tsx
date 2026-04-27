@@ -11,10 +11,10 @@ export default function Services() {
     <PageTransition className="flex-1 max-w-5xl mx-auto w-full px-6 py-24">
       <header className="mb-16">
         <h1 className="font-serif text-5xl md:text-6xl mb-6">
-          <strong className="font-bold">Service</strong> <em className="italic">catalog</em>
+          <strong className="font-bold">Leistungen</strong> <em className="italic">& Preise</em>
         </h1>
         <p className="text-muted-foreground max-w-xl text-lg">
-          Our complete range of cuts, color, and treatments. Transparent pricing, unhurried execution.
+          Klare Sache: ein Schnitt, oder Schnitt mit Bart. Ehrliche Preise, ehrliche Arbeit.
         </p>
       </header>
 
@@ -58,16 +58,16 @@ export default function Services() {
                         </div>
                         <div className="flex items-center gap-8 md:text-right shrink-0">
                           <div className="text-sm">
-                            <div className="uppercase tracking-widest text-muted-foreground text-xs mb-1">Time</div>
-                            <div>{service.durationMinutes} min</div>
+                            <div className="uppercase tracking-widest text-muted-foreground text-xs mb-1">Dauer</div>
+                            <div>{service.durationMinutes} Min</div>
                           </div>
                           <div className="text-sm">
-                            <div className="uppercase tracking-widest text-muted-foreground text-xs mb-1">Price</div>
+                            <div className="uppercase tracking-widest text-muted-foreground text-xs mb-1">Preis</div>
                             <div>€ {service.priceCents / 100}</div>
                           </div>
                           <div className="hidden md:block">
                             <span className="text-xs uppercase tracking-widest font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                              Book →
+                              Buchen →
                             </span>
                           </div>
                         </div>
