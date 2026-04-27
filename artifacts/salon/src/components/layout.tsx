@@ -3,14 +3,38 @@ import { ScissorIcon, BarberPoleIcon } from "./scissor-icon";
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/lib/auth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 export function Layout({ children }: LayoutProps) {
-  const [location] = useLocation();
-  const { customer } = useAuth();
+  const [location, setLocation] = useLocation();
+  const { customer, logout } = useAuth();
+
+  const customerInitials = customer?.name
+    ? customer.name
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part.charAt(0).toUpperCase())
+        .join("")
+    : "";
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch {}
+    setLocation("/");
+  };
 
   const navLinks = [
     { href: "/", label: "Start" },
@@ -60,17 +84,69 @@ export function Layout({ children }: LayoutProps) {
             })}
             <span className="h-5 w-px bg-border" />
             {customer ? (
-              <Link
-                href="/meine-termine"
-                className={`text-[11px] font-bold uppercase tracking-[0.22em] transition-colors ${
-                  location.startsWith("/meine-termine") ? "text-primary" : "text-foreground hover:text-primary"
-                }`}
-              >
-                Mein Konto
-              </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  data-testid="button-user-menu"
+                  className="group inline-flex items-center gap-3 outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                >
+                  <span className="flex items-center justify-center w-9 h-9 bg-foreground text-background font-bold text-[11px] tracking-[0.1em] border-2 border-foreground group-hover:bg-primary group-hover:border-primary transition-colors">
+                    {customerInitials || "?"}
+                  </span>
+                  <span className="hidden lg:flex flex-col items-start leading-tight">
+                    <span className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground font-bold">
+                      Eingeloggt
+                    </span>
+                    <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-foreground group-hover:text-primary transition-colors">
+                      {customer.name.split(" ")[0]}
+                    </span>
+                  </span>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  sideOffset={12}
+                  className="w-64 rounded-none border-2 border-foreground bg-background p-0"
+                >
+                  <DropdownMenuLabel className="px-4 py-3 border-b-2 border-foreground bg-secondary">
+                    <div className="text-[9px] uppercase tracking-[0.3em] text-primary font-bold mb-1">
+                      Mein Konto
+                    </div>
+                    <div className="font-serif text-base font-bold leading-tight text-foreground truncate">
+                      {customer.name}
+                    </div>
+                    <div className="text-[10px] text-muted-foreground truncate mt-0.5">
+                      {customer.email}
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem
+                    asChild
+                    className="rounded-none px-4 py-3 text-[11px] uppercase tracking-[0.22em] font-bold cursor-pointer focus:bg-secondary focus:text-primary"
+                  >
+                    <Link href="/meine-termine" data-testid="link-my-appointments">
+                      Meine Termine
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    asChild
+                    className="rounded-none px-4 py-3 text-[11px] uppercase tracking-[0.22em] font-bold cursor-pointer focus:bg-secondary focus:text-primary"
+                  >
+                    <Link href="/buchen" data-testid="link-new-booking">
+                      Neuer Termin
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="m-0 h-[2px] bg-foreground" />
+                  <DropdownMenuItem
+                    onSelect={handleLogout}
+                    data-testid="button-logout"
+                    className="rounded-none px-4 py-3 text-[11px] uppercase tracking-[0.22em] font-bold cursor-pointer text-destructive focus:bg-destructive focus:text-white"
+                  >
+                    Abmelden
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <Link
                 href="/login"
+                data-testid="link-login"
                 className={`text-[11px] font-bold uppercase tracking-[0.22em] transition-colors ${
                   location.startsWith("/login") ? "text-primary" : "text-foreground hover:text-primary"
                 }`}
