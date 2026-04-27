@@ -32,7 +32,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { BarberPoleIcon, ScissorIcon } from "@/components/scissor-icon";
 
 const ADMIN_PASSWORD = "cankann";
-const STORAGE_KEY = "mainusch_admin_unlocked";
+const STORAGE_KEY = "goethe_cuts_admin_unlocked";
 
 function PasswordGate({ onUnlock }: { onUnlock: () => void }) {
   const [value, setValue] = useState("");
@@ -58,7 +58,7 @@ function PasswordGate({ onUnlock }: { onUnlock: () => void }) {
         <div className="h-3 barber-stripes-thin border-b-2 border-foreground" />
         <div className="p-10 text-center">
           <BarberPoleIcon className="w-6 h-16 text-foreground mx-auto mb-4" />
-          <div className="font-display text-3xl tracking-[0.18em] mb-1">MAINUSCH</div>
+          <div className="font-display text-3xl tracking-[0.18em] mb-1">GOETHE CUTS</div>
           <div className="font-serif italic text-xs text-primary tracking-widest mb-8">
             Interner Bereich
           </div>
@@ -821,7 +821,7 @@ function Dashboard() {
             </span>
           </div>
           <h1 className="font-display text-5xl md:text-6xl tracking-tight">
-            MAINUSCH <span className="font-serif italic text-primary">verwaltung</span>
+            GOETHE CUTS <span className="font-serif italic text-primary">verwaltung</span>
           </h1>
         </div>
         <button

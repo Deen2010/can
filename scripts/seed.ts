@@ -27,7 +27,7 @@ const stylists = [
     id: "stylist-can",
     name: "Can",
     role: "Master Barber · Founder",
-    bio: "Can ist der Mann hinter MAINUSCH. Klassische Schnitte, präzise Fades und ehrliche Bartpflege — seit Jahren am Stuhl, mit Auge für jedes Detail.",
+    bio: "Can ist der Mann hinter GOETHE CUTS. Klassische Schnitte, präzise Fades und ehrliche Bartpflege — seit Jahren am Stuhl, mit Auge für jedes Detail.",
     imageUrl:
       "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=800&q=80",
     specialties: ["Haircut", "Bart", "Hot Towel"],

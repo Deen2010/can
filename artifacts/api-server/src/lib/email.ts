@@ -45,7 +45,7 @@ export async function sendMail(input: SendMailInput): Promise<void> {
   const from =
     process.env["SMTP_FROM"] ||
     process.env["SMTP_USER"] ||
-    "Mainusch <no-reply@mainusch.local>";
+    "Goethe Cuts <no-reply@goethe-cuts.local>";
   const transport = getTransport();
 
   if (!transport) {
@@ -104,11 +104,11 @@ export function renderBookingConfirmation(data: BookingEmailData): {
   const datum = fmtDate(data.startsAt);
   const uhr = fmtTime(data.startsAt);
   const preis = `€${(data.priceCents / 100).toFixed(2).replace(".", ",")}`;
-  const subject = `Terminanfrage bei MAINUSCH · ${datum} ${uhr}`;
+  const subject = `Terminanfrage bei GOETHE CUTS · ${datum} ${uhr}`;
 
   const text = `Hi ${data.customerName},
 
-danke für deine Terminanfrage bei MAINUSCH!
+danke für deine Terminanfrage bei GOETHE CUTS!
 
 Termin:    ${datum}, ${uhr}
 Service:   ${data.serviceName} (${data.durationMinutes} Min.)
@@ -121,7 +121,7 @@ Du bekommst eine zweite Mail, sobald Can deinen Termin bestätigt hat.
 Bei Fragen einfach auf diese Mail antworten oder per Instagram melden: @can.v912
 
 Bis bald,
-MAINUSCH · Hinterhof Cuts
+GOETHE CUTS · Hinterhof
 Buchungs-ID: ${data.bookingId}
 `;
 
@@ -133,7 +133,7 @@ Buchungs-ID: ${data.bookingId}
       <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;background:#f3ece0;border:3px solid #1a1a1a">
         <tr><td style="background:repeating-linear-gradient(45deg,#b91d2c 0 8px,#f3ece0 8px 16px,#19345a 16px 24px,#f3ece0 24px 32px);height:12px"></td></tr>
         <tr><td style="padding:32px 36px 12px;text-align:center">
-          <div style="font-family:Impact,'Arial Narrow',sans-serif;font-size:34px;letter-spacing:6px;color:#1a1a1a">MAINUSCH</div>
+          <div style="font-family:Impact,'Arial Narrow',sans-serif;font-size:34px;letter-spacing:6px;color:#1a1a1a">GOETHE CUTS</div>
           <div style="font-style:italic;font-size:13px;color:#b91d2c;letter-spacing:3px;margin-top:6px">— Barber · Est. 2026 —</div>
         </td></tr>
         <tr><td style="padding:24px 36px 8px;font-size:18px">
@@ -162,7 +162,7 @@ Buchungs-ID: ${data.bookingId}
           <a href="https://instagram.com/can.v912" style="color:#b91d2c;text-decoration:none"><strong>@can.v912</strong></a>.
         </td></tr>
         <tr><td style="padding:18px 36px;background:#1a1a1a;color:#f3ece0;text-align:center;font-family:Helvetica,Arial,sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase">
-          MAINUSCH · Hinterhof Cuts<br/>
+          GOETHE CUTS · Hinterhof<br/>
           <span style="color:#b91d2c;font-style:italic;text-transform:none;letter-spacing:1px">Buchungs-ID: ${escapeHtml(data.bookingId)}</span>
         </td></tr>
         <tr><td style="background:repeating-linear-gradient(45deg,#b91d2c 0 8px,#f3ece0 8px 16px,#19345a 16px 24px,#f3ece0 24px 32px);height:12px"></td></tr>

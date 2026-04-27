@@ -20,7 +20,7 @@ export default function Home() {
               <div className="inline-flex items-center gap-3 border-2 border-foreground px-4 py-1.5 bg-background">
                 <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
                 <span className="text-[10px] font-bold uppercase tracking-[0.3em]">
-                  Walk-In · After Dark · Mainusch Block
+                  Walk-In · After Dark · Goethe Block
                 </span>
               </div>
 
@@ -113,7 +113,7 @@ export default function Home() {
             <div className="border-4 border-background relative">
               <img
                 src={chillVibe}
-                alt="Mainusch Barbershop bei Nacht — chill vibes im Hinterhof"
+                alt="Goethe Cuts Barbershop bei Nacht — chill vibes im Hinterhof"
                 className="w-full aspect-[4/5] md:aspect-[4/3] object-cover"
               />
               {/* Overlay tag */}
@@ -250,7 +250,7 @@ export default function Home() {
                 <div className="text-center mb-8">
                   <ScissorIcon className="w-10 h-10 text-foreground mx-auto mb-3" />
                   <div className="font-display text-3xl tracking-[0.2em]">PRICE LIST</div>
-                  <div className="font-serif italic text-sm text-primary mt-1">Mainusch · seit 2026</div>
+                  <div className="font-serif italic text-sm text-primary mt-1">Goethe Cuts · seit 2026</div>
                   <div className="flex items-center justify-center gap-2 mt-3">
                     <span className="h-px w-12 bg-foreground" />
                     <span className="text-foreground">★</span>

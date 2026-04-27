@@ -54,7 +54,7 @@ export function Layout({ children }: LayoutProps) {
             <BarberPoleIcon className="w-6 h-16 text-foreground shrink-0" />
             <div className="leading-none">
               <div className="font-display text-3xl tracking-[0.18em] text-foreground">
-                MAINUSCH
+                GOETHE CUTS
               </div>
               <div className="flex items-center gap-2 mt-1">
                 <span className="h-px w-6 bg-primary" />
@@ -171,7 +171,7 @@ export function Layout({ children }: LayoutProps) {
             <div className="flex items-center gap-3 mb-4">
               <BarberPoleIcon className="w-5 h-12 text-background" />
               <div>
-                <div className="font-display text-2xl tracking-[0.18em]">MAINUSCH</div>
+                <div className="font-display text-2xl tracking-[0.18em]">GOETHE CUTS</div>
                 <div className="font-serif italic text-xs text-primary tracking-widest">Barber Shop</div>
               </div>
             </div>
@@ -182,7 +182,7 @@ export function Layout({ children }: LayoutProps) {
 
           <div className="space-y-3">
             <div className="text-[10px] uppercase tracking-[0.3em] text-primary font-bold">Werkstatt</div>
-            <div className="font-serif italic text-lg">Mainusch Block</div>
+            <div className="font-serif italic text-lg">Goethe Block</div>
             <div className="text-xs text-background/70">
               Hinterhof · 65xxx Mainz<br />
               Mi – Sa · 12:00 – 21:00<br />
@@ -201,7 +201,7 @@ export function Layout({ children }: LayoutProps) {
               @can.v912
             </a>
             <div className="text-xs text-background/70">
-              © {new Date().getFullYear()} Mainusch · Schnitt von Can
+              © {new Date().getFullYear()} Goethe Cuts · Schnitt von Can
             </div>
           </div>
         </div>

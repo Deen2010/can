@@ -185,7 +185,7 @@ export default function Stylists() {
             <div className="border-2 border-foreground p-2 bg-background">
               <img
                 src={chillVibe}
-                alt="Mainusch Werkstatt bei Nacht"
+                alt="Goethe Cuts Werkstatt bei Nacht"
                 className="w-full aspect-[4/3] object-cover"
               />
             </div>

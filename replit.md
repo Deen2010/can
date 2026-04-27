@@ -15,7 +15,7 @@ pnpm workspace monorepo using TypeScript. Hosts the **Salon** artifact: a friseu
 - **Validation**: Zod (`zod/v4`), `drizzle-zod`
 - **API codegen**: Orval (from OpenAPI spec)
 - **Build**: esbuild (CJS bundle)
-- **Auth**: cookie-based sessions (bcryptjs hashing) — `customers` + `sessions` tables; cookie `mainusch_session`, 30-day TTL
+- **Auth**: cookie-based sessions (bcryptjs hashing) — `customers` + `sessions` tables; cookie `goethe_cuts_session`, 30-day TTL
 - **E-Mail**: nodemailer via SMTP env vars (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`); no-op stub when not configured
 
 ## Auth flow

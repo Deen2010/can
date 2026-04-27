@@ -4,7 +4,7 @@ import { eq, gt, and } from "drizzle-orm";
 import { db, customersTable, sessionsTable, type Customer } from "@workspace/db";
 import type { Request, Response, NextFunction } from "express";
 
-export const SESSION_COOKIE = "mainusch_session";
+export const SESSION_COOKIE = "goethe_cuts_session";
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 30; // 30 days
 
 export async function hashPassword(password: string): Promise<string> {
