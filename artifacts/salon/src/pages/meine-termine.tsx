@@ -53,13 +53,13 @@ export default function MeineTermine() {
 
   return (
     <PageTransition className="flex-1 max-w-3xl mx-auto w-full px-6 py-24">
-      <div className="flex justify-between items-end border-b-2 border-foreground pb-6 mb-12">
-        <div>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 border-b-2 border-foreground pb-6 mb-12">
+        <div className="min-w-0">
           <div className="text-[10px] uppercase tracking-[0.3em] text-primary mb-2">Mein Konto</div>
-          <h1 className="font-display text-4xl tracking-[0.15em]">
+          <h1 className="font-display text-3xl sm:text-4xl tracking-[0.12em] sm:tracking-[0.15em] break-words">
             HI, {customer.name.toUpperCase()}
           </h1>
-          <p className="font-serif italic text-sm text-muted-foreground mt-2">
+          <p className="font-serif italic text-sm text-muted-foreground mt-2 break-all">
             {customer.email}
           </p>
         </div>
@@ -68,7 +68,7 @@ export default function MeineTermine() {
             await logout();
             setLocation("/");
           }}
-          className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground hover:text-primary"
+          className="self-start sm:self-auto text-[10px] uppercase tracking-[0.25em] text-muted-foreground hover:text-primary border border-border sm:border-0 px-3 py-2 sm:px-0 sm:py-0"
         >
           Ausloggen
         </button>

@@ -13,25 +13,25 @@ export default function Home() {
       {/* HERO — Old-school barbershop poster */}
       <section className="relative border-b-2 border-foreground bg-background overflow-hidden">
         <div className="absolute inset-0 vintage-paper opacity-60 pointer-events-none" />
-        <div className="max-w-7xl mx-auto px-6 pt-16 pb-20 md:pt-24 md:pb-28 relative">
+        <div className="max-w-7xl mx-auto px-5 sm:px-6 pt-12 pb-16 md:pt-24 md:pb-28 relative">
           <div className="grid md:grid-cols-12 gap-10 items-center">
-            <div className="md:col-span-7 space-y-8">
+            <div className="md:col-span-7 space-y-6 md:space-y-8">
               {/* Marquee tag */}
-              <div className="inline-flex items-center gap-3 border-2 border-foreground px-4 py-1.5 bg-background">
-                <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
-                <span className="text-[10px] font-bold uppercase tracking-[0.3em]">
+              <div className="inline-flex items-center gap-3 border-2 border-foreground px-3 py-1.5 bg-background max-w-full">
+                <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse shrink-0" />
+                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.25em] sm:tracking-[0.3em] truncate">
                   Walk-In · After Dark · Goethe Block
                 </span>
               </div>
 
               <h1 className="font-display tracking-tight">
-                <span className="block text-foreground text-7xl md:text-9xl leading-[0.85] tracking-[0.02em]">
+                <span className="block text-foreground text-6xl sm:text-7xl md:text-9xl leading-[0.85] tracking-[0.02em]">
                   CUTS
                 </span>
-                <span className="block font-serif italic text-primary text-5xl md:text-7xl mt-2 leading-none">
+                <span className="block font-serif italic text-primary text-4xl sm:text-5xl md:text-7xl mt-2 leading-none">
                   &amp; close shaves
                 </span>
-                <span className="block text-foreground text-6xl md:text-8xl leading-[0.85] mt-3">
+                <span className="block text-foreground text-5xl sm:text-6xl md:text-8xl leading-[0.85] mt-3">
                   SINCE <span className="text-primary">2026</span>
                 </span>
               </h1>
@@ -44,17 +44,17 @@ export default function Home() {
                 </p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-4 pt-2">
+              <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 sm:gap-4 pt-2">
                 <Link
                   href="/buchen"
-                  className="group inline-flex items-center gap-3 bg-foreground text-background px-8 py-4 font-bold text-xs uppercase tracking-[0.25em] hover:bg-primary transition-colors border-2 border-foreground"
+                  className="group inline-flex items-center justify-center sm:justify-start gap-3 bg-foreground text-background px-6 sm:px-8 py-4 font-bold text-xs uppercase tracking-[0.22em] sm:tracking-[0.25em] hover:bg-primary transition-colors border-2 border-foreground"
                 >
                   Termin buchen
                   <span className="group-hover:translate-x-1 transition-transform">→</span>
                 </Link>
                 <Link
                   href="/services"
-                  className="inline-flex items-center gap-3 bg-background text-foreground px-8 py-4 font-bold text-xs uppercase tracking-[0.25em] border-2 border-foreground hover:bg-foreground hover:text-background transition-colors"
+                  className="inline-flex items-center justify-center sm:justify-start gap-3 bg-background text-foreground px-6 sm:px-8 py-4 font-bold text-xs uppercase tracking-[0.22em] sm:tracking-[0.25em] border-2 border-foreground hover:bg-foreground hover:text-background transition-colors"
                 >
                   Cuts & Preise
                 </Link>
@@ -65,21 +65,21 @@ export default function Home() {
             <div className="md:col-span-5">
               <div className="relative">
                 <div className="absolute -left-3 top-0 bottom-0 w-6 barber-pole hidden md:block border-2 border-foreground" />
-                <div className="relative border-2 border-foreground bg-background p-3 md:ml-6">
+                <div className="relative border-2 border-foreground bg-background p-2 sm:p-3 md:ml-6">
                   <img
                     src={goodVibes}
                     alt="Schnitt von Can im Salon"
                     className="w-full aspect-[4/5] object-cover grayscale-[15%] contrast-110"
                   />
-                  <div className="absolute -bottom-4 -right-4 bg-primary text-primary-foreground px-4 py-2 border-2 border-foreground">
-                    <div className="font-display text-2xl tracking-wider leading-none">GOOD</div>
-                    <div className="font-serif italic text-xs leading-none mt-1">vibes only</div>
+                  <div className="absolute -bottom-3 -right-3 sm:-bottom-4 sm:-right-4 bg-primary text-primary-foreground px-3 py-1.5 sm:px-4 sm:py-2 border-2 border-foreground">
+                    <div className="font-display text-xl sm:text-2xl tracking-wider leading-none">GOOD</div>
+                    <div className="font-serif italic text-[10px] sm:text-xs leading-none mt-1">vibes only</div>
                   </div>
-                </div>
-                <div className="absolute -top-4 -left-4 hidden md:flex w-20 h-20 bg-foreground text-background items-center justify-center rotate-[-12deg] border-2 border-foreground">
-                  <div className="text-center">
-                    <div className="font-display text-xl leading-none">€5</div>
-                    <div className="text-[8px] uppercase tracking-widest mt-1">cut</div>
+                  <div className="absolute -top-3 -left-3 sm:-top-4 sm:-left-4 flex w-14 h-14 sm:w-20 sm:h-20 bg-foreground text-background items-center justify-center rotate-[-12deg] border-2 border-foreground">
+                    <div className="text-center">
+                      <div className="font-display text-base sm:text-xl leading-none">€5</div>
+                      <div className="text-[7px] sm:text-[8px] uppercase tracking-widest mt-0.5 sm:mt-1">cut</div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -139,19 +139,19 @@ export default function Home() {
               Garagentür auf, Licht an, Spiegel raus — und los. Wir machen das, weil wir es lieben.
               Komm vorbei, hol dir 'nen frischen Schnitt und bleib für 'n Kaffee.
             </p>
-            <div className="flex items-center gap-6 pt-4">
+            <div className="grid grid-cols-3 gap-3 sm:gap-6 pt-4 sm:flex sm:items-center">
               <div>
-                <div className="font-display text-3xl text-primary leading-none">200+</div>
+                <div className="font-display text-2xl sm:text-3xl text-primary leading-none">200+</div>
                 <div className="text-[9px] uppercase tracking-widest text-background/60 mt-1">cuts / monat</div>
               </div>
-              <div className="w-px h-10 bg-background/30" />
-              <div>
-                <div className="font-display text-3xl text-primary leading-none">4.9</div>
+              <div className="hidden sm:block w-px h-10 bg-background/30" />
+              <div className="border-l-2 sm:border-0 border-background/20 pl-3 sm:pl-0">
+                <div className="font-display text-2xl sm:text-3xl text-primary leading-none">4.9</div>
                 <div className="text-[9px] uppercase tracking-widest text-background/60 mt-1">★ ★ ★ ★ ★</div>
               </div>
-              <div className="w-px h-10 bg-background/30" />
-              <div>
-                <div className="font-display text-3xl text-primary leading-none">1</div>
+              <div className="hidden sm:block w-px h-10 bg-background/30" />
+              <div className="border-l-2 sm:border-0 border-background/20 pl-3 sm:pl-0">
+                <div className="font-display text-2xl sm:text-3xl text-primary leading-none">1</div>
                 <div className="text-[9px] uppercase tracking-widest text-background/60 mt-1">stuhl · ein vibe</div>
               </div>
             </div>
