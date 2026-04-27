@@ -11,6 +11,7 @@ import type { Stylist } from "./stylist";
 
 export interface Appointment {
   id: string;
+  customerId?: string | null;
   customerName: string;
   customerEmail: string;
   customerPhone: string;

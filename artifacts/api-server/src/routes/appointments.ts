@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { randomUUID } from "node:crypto";
-import { and, eq, gte, lte, ne, asc } from "drizzle-orm";
+import { and, eq, gte, lte, ne, asc, desc } from "drizzle-orm";
 import {
   db,
   appointmentsTable,
@@ -20,6 +20,8 @@ import {
   UpdateAppointmentStatusResponse,
 } from "@workspace/api-zod";
 import { overlaps } from "../lib/scheduling";
+import { sendMail, renderBookingConfirmation } from "../lib/email";
+import type { AuthenticatedRequest } from "../lib/auth";
 
 const router: IRouter = Router();
 
@@ -42,36 +44,54 @@ async function hydrate(appointmentRow: typeof appointmentsTable.$inferSelect) {
   };
 }
 
-router.get("/appointments", async (req, res): Promise<void> => {
+router.get("/appointments", async (req: AuthenticatedRequest, res): Promise<void> => {
   const parsed = ListAppointmentsQueryParams.safeParse(req.query);
   if (!parsed.success) {
     res.status(400).json({ error: "bad_request", message: parsed.error.message });
     return;
   }
-  const { from, to, status, stylistId } = parsed.data;
+  const { from, to, status, stylistId, mine } = parsed.data;
   const conditions = [];
   if (from) conditions.push(gte(appointmentsTable.startsAt, new Date(from)));
   if (to) conditions.push(lte(appointmentsTable.startsAt, new Date(to)));
   if (status) conditions.push(eq(appointmentsTable.status, status));
   if (stylistId) conditions.push(eq(appointmentsTable.stylistId, stylistId));
+  if (mine) {
+    if (!req.customer) {
+      res.status(401).json({ error: "unauthorized", message: "Bitte einloggen" });
+      return;
+    }
+    conditions.push(eq(appointmentsTable.customerId, req.customer.id));
+  }
 
   const rows = await db
     .select()
     .from(appointmentsTable)
     .where(conditions.length ? and(...conditions) : undefined)
-    .orderBy(asc(appointmentsTable.startsAt));
+    .orderBy(mine ? desc(appointmentsTable.startsAt) : asc(appointmentsTable.startsAt));
 
   const hydrated = await Promise.all(rows.map(hydrate));
   res.json(ListAppointmentsResponse.parse(hydrated));
 });
 
-router.post("/appointments", async (req, res): Promise<void> => {
+router.post("/appointments", async (req: AuthenticatedRequest, res): Promise<void> => {
   const parsed = CreateAppointmentBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "bad_request", message: parsed.error.message });
     return;
   }
   const data = parsed.data;
+
+  const customerName = (data.customerName ?? req.customer?.name ?? "").trim();
+  const customerEmail = (data.customerEmail ?? req.customer?.email ?? "").trim();
+  const customerPhone = (data.customerPhone ?? req.customer?.phone ?? "").trim();
+  if (!customerName || !customerEmail || !customerPhone) {
+    res.status(400).json({
+      error: "bad_request",
+      message: "Name, E-Mail und Telefon sind nötig",
+    });
+    return;
+  }
 
   const [service] = await db
     .select()
@@ -130,9 +150,10 @@ router.post("/appointments", async (req, res): Promise<void> => {
     .insert(appointmentsTable)
     .values({
       id,
-      customerName: data.customerName,
-      customerEmail: data.customerEmail,
-      customerPhone: data.customerPhone,
+      customerId: req.customer?.id ?? null,
+      customerName,
+      customerEmail,
+      customerPhone,
       notes: data.notes ?? null,
       serviceId: data.serviceId,
       stylistId: data.stylistId,
@@ -146,6 +167,17 @@ router.post("/appointments", async (req, res): Promise<void> => {
     res.status(500).json({ error: "server_error", message: "Buchung fehlgeschlagen" });
     return;
   }
+
+  const mail = renderBookingConfirmation({
+    customerName,
+    serviceName: service.name,
+    stylistName: stylist.name,
+    startsAt,
+    durationMinutes: service.durationMinutes,
+    priceCents: service.priceCents,
+    bookingId: id,
+  });
+  void sendMail({ to: customerEmail, ...mail });
 
   const hydrated = await hydrate(created);
   res.status(201).json(GetAppointmentResponse.parse(hydrated));
@@ -191,10 +223,26 @@ router.patch("/appointments/:id/status", async (req, res): Promise<void> => {
   res.json(UpdateAppointmentStatusResponse.parse(await hydrate(updated)));
 });
 
-router.delete("/appointments/:id", async (req, res): Promise<void> => {
+router.delete("/appointments/:id", async (req: AuthenticatedRequest, res): Promise<void> => {
   const params = CancelAppointmentParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: "bad_request", message: params.error.message });
+    return;
+  }
+  const [existing] = await db
+    .select()
+    .from(appointmentsTable)
+    .where(eq(appointmentsTable.id, params.data.id));
+  if (!existing) {
+    res.status(404).json({ error: "not_found", message: "Termin nicht gefunden" });
+    return;
+  }
+  if (
+    req.customer &&
+    existing.customerId &&
+    existing.customerId !== req.customer.id
+  ) {
+    res.status(403).json({ error: "forbidden", message: "Nicht erlaubt" });
     return;
   }
   const [updated] = await db

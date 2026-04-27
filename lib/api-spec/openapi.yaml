@@ -20,6 +20,8 @@ tags:
     description: Slot availability lookup
   - name: dashboard
     description: Aggregated dashboard data
+  - name: auth
+    description: Customer auth (registration, login, sessions)
 paths:
   /healthz:
     get:
@@ -169,6 +171,12 @@ paths:
           required: false
           schema:
             type: string
+        - name: mine
+          in: query
+          required: false
+          description: If true, only return appointments owned by the logged-in customer
+          schema:
+            type: boolean
       responses:
         "200":
           description: Appointments
@@ -297,6 +305,81 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DashboardSummary"
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Create customer account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Email taken
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Log in
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Log out
+      responses:
+        "204":
+          description: Logged out
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Current logged-in customer
+      responses:
+        "200":
+          description: Current customer (or null if not logged in)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeResponse"
+
   /dashboard/upcoming:
     get:
       operationId: getUpcomingAppointments
@@ -419,6 +502,9 @@ components:
       properties:
         id:
           type: string
+        customerId:
+          type: string
+          nullable: true
         customerName:
           type: string
         customerEmail:
@@ -462,13 +548,10 @@ components:
       properties:
         customerName:
           type: string
-          minLength: 1
         customerEmail:
           type: string
-          minLength: 3
         customerPhone:
           type: string
-          minLength: 3
         serviceId:
           type: string
         stylistId:
@@ -478,12 +561,78 @@ components:
         notes:
           type: string
       required:
-        - customerName
-        - customerEmail
-        - customerPhone
         - serviceId
         - stylistId
         - startsAt
+
+    Customer:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        phone:
+          type: string
+        emailVerifiedAt:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+      required:
+        - id
+        - email
+        - name
+        - phone
+        - createdAt
+    RegisterInput:
+      type: object
+      properties:
+        email:
+          type: string
+          minLength: 3
+        password:
+          type: string
+          minLength: 6
+        name:
+          type: string
+          minLength: 1
+        phone:
+          type: string
+      required:
+        - email
+        - password
+        - name
+    LoginInput:
+      type: object
+      properties:
+        email:
+          type: string
+          minLength: 3
+        password:
+          type: string
+          minLength: 1
+      required:
+        - email
+        - password
+    AuthResponse:
+      type: object
+      properties:
+        customer:
+          $ref: "#/components/schemas/Customer"
+      required:
+        - customer
+    MeResponse:
+      type: object
+      properties:
+        customer:
+          oneOf:
+            - $ref: "#/components/schemas/Customer"
+            - type: "null"
+      required:
+        - customer
 
     UpdateAppointmentStatusInput:
       type: object

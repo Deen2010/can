@@ -2,6 +2,7 @@ import { Link, useLocation } from "wouter";
 import { ScissorIcon, BarberPoleIcon } from "./scissor-icon";
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
+import { useAuth } from "@/lib/auth";
 
 interface LayoutProps {
   children: ReactNode;
@@ -9,6 +10,7 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
+  const { customer } = useAuth();
 
   const navLinks = [
     { href: "/", label: "Start" },
@@ -56,6 +58,26 @@ export function Layout({ children }: LayoutProps) {
                 </Link>
               );
             })}
+            <span className="h-5 w-px bg-border" />
+            {customer ? (
+              <Link
+                href="/meine-termine"
+                className={`text-[11px] font-bold uppercase tracking-[0.22em] transition-colors ${
+                  location.startsWith("/meine-termine") ? "text-primary" : "text-foreground hover:text-primary"
+                }`}
+              >
+                Mein Konto
+              </Link>
+            ) : (
+              <Link
+                href="/login"
+                className={`text-[11px] font-bold uppercase tracking-[0.22em] transition-colors ${
+                  location.startsWith("/login") ? "text-primary" : "text-foreground hover:text-primary"
+                }`}
+              >
+                Login
+              </Link>
+            )}
           </nav>
         </div>
       </header>

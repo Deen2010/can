@@ -54,6 +54,7 @@ export const AppointmentStatus = {
 
 export interface Appointment {
   id: string;
+  customerId?: string | null;
   customerName: string;
   customerEmail: string;
   customerPhone: string;
@@ -69,16 +70,47 @@ export interface Appointment {
 }
 
 export interface CreateAppointmentInput {
-  /** @minLength 1 */
-  customerName: string;
-  /** @minLength 3 */
-  customerEmail: string;
-  /** @minLength 3 */
-  customerPhone: string;
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
   serviceId: string;
   stylistId: string;
   startsAt: string;
   notes?: string;
+}
+
+export interface Customer {
+  id: string;
+  email: string;
+  name: string;
+  phone: string;
+  emailVerifiedAt?: string | null;
+  createdAt: string;
+}
+
+export interface RegisterInput {
+  /** @minLength 3 */
+  email: string;
+  /** @minLength 6 */
+  password: string;
+  /** @minLength 1 */
+  name: string;
+  phone?: string;
+}
+
+export interface LoginInput {
+  /** @minLength 3 */
+  email: string;
+  /** @minLength 1 */
+  password: string;
+}
+
+export interface AuthResponse {
+  customer: Customer;
+}
+
+export interface MeResponse {
+  customer: Customer | null;
 }
 
 export type UpdateAppointmentStatusInputStatus =
@@ -122,6 +154,10 @@ export type ListAppointmentsParams = {
   to?: string;
   status?: ListAppointmentsStatus;
   stylistId?: string;
+  /**
+   * If true, only return appointments owned by the logged-in customer
+   */
+  mine?: boolean;
 };
 
 export type ListAppointmentsStatus =

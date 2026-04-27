@@ -102,10 +102,17 @@ export const ListAppointmentsQueryParams = zod.object({
   to: zod.coerce.string().optional(),
   status: zod.enum(["pending", "confirmed", "cancelled"]).optional(),
   stylistId: zod.coerce.string().optional(),
+  mine: zod.coerce
+    .boolean()
+    .optional()
+    .describe(
+      "If true, only return appointments owned by the logged-in customer",
+    ),
 });
 
 export const ListAppointmentsResponseItem = zod.object({
   id: zod.string(),
+  customerId: zod.string().nullish(),
   customerName: zod.string(),
   customerEmail: zod.string(),
   customerPhone: zod.string(),
@@ -142,15 +149,10 @@ export const ListAppointmentsResponse = zod.array(ListAppointmentsResponseItem);
 /**
  * @summary Book an appointment
  */
-
-export const createAppointmentBodyCustomerEmailMin = 3;
-
-export const createAppointmentBodyCustomerPhoneMin = 3;
-
 export const CreateAppointmentBody = zod.object({
-  customerName: zod.string().min(1),
-  customerEmail: zod.string().min(createAppointmentBodyCustomerEmailMin),
-  customerPhone: zod.string().min(createAppointmentBodyCustomerPhoneMin),
+  customerName: zod.string().optional(),
+  customerEmail: zod.string().optional(),
+  customerPhone: zod.string().optional(),
   serviceId: zod.string(),
   stylistId: zod.string(),
   startsAt: zod.string(),
@@ -166,6 +168,7 @@ export const GetAppointmentParams = zod.object({
 
 export const GetAppointmentResponse = zod.object({
   id: zod.string(),
+  customerId: zod.string().nullish(),
   customerName: zod.string(),
   customerEmail: zod.string(),
   customerPhone: zod.string(),
@@ -207,6 +210,7 @@ export const CancelAppointmentParams = zod.object({
 
 export const CancelAppointmentResponse = zod.object({
   id: zod.string(),
+  customerId: zod.string().nullish(),
   customerName: zod.string(),
   customerEmail: zod.string(),
   customerPhone: zod.string(),
@@ -252,6 +256,7 @@ export const UpdateAppointmentStatusBody = zod.object({
 
 export const UpdateAppointmentStatusResponse = zod.object({
   id: zod.string(),
+  customerId: zod.string().nullish(),
   customerName: zod.string(),
   customerEmail: zod.string(),
   customerPhone: zod.string(),
@@ -305,6 +310,58 @@ export const GetDashboardSummaryResponse = zod.object({
 });
 
 /**
+ * @summary Create customer account
+ */
+export const registerBodyEmailMin = 3;
+
+export const registerBodyPasswordMin = 6;
+
+export const RegisterBody = zod.object({
+  email: zod.string().min(registerBodyEmailMin),
+  password: zod.string().min(registerBodyPasswordMin),
+  name: zod.string().min(1),
+  phone: zod.string().optional(),
+});
+
+/**
+ * @summary Log in
+ */
+export const loginBodyEmailMin = 3;
+
+export const LoginBody = zod.object({
+  email: zod.string().min(loginBodyEmailMin),
+  password: zod.string().min(1),
+});
+
+export const LoginResponse = zod.object({
+  customer: zod.object({
+    id: zod.string(),
+    email: zod.string(),
+    name: zod.string(),
+    phone: zod.string(),
+    emailVerifiedAt: zod.string().nullish(),
+    createdAt: zod.string(),
+  }),
+});
+
+/**
+ * @summary Current logged-in customer
+ */
+export const GetMeResponse = zod.object({
+  customer: zod.union([
+    zod.object({
+      id: zod.string(),
+      email: zod.string(),
+      name: zod.string(),
+      phone: zod.string(),
+      emailVerifiedAt: zod.string().nullish(),
+      createdAt: zod.string(),
+    }),
+    zod.null(),
+  ]),
+});
+
+/**
  * @summary Next upcoming appointments
  */
 export const getUpcomingAppointmentsQueryLimitMax = 50;
@@ -319,6 +376,7 @@ export const GetUpcomingAppointmentsQueryParams = zod.object({
 
 export const GetUpcomingAppointmentsResponseItem = zod.object({
   id: zod.string(),
+  customerId: zod.string().nullish(),
   customerName: zod.string(),
   customerEmail: zod.string(),
   customerPhone: zod.string(),

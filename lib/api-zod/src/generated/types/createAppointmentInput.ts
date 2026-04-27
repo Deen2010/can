@@ -7,12 +7,9 @@
  */
 
 export interface CreateAppointmentInput {
-  /** @minLength 1 */
-  customerName: string;
-  /** @minLength 3 */
-  customerEmail: string;
-  /** @minLength 3 */
-  customerPhone: string;
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
   serviceId: string;
   stylistId: string;
   startsAt: string;

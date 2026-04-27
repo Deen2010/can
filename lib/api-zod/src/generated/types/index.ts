@@ -8,9 +8,11 @@
 
 export * from "./appointment";
 export * from "./appointmentStatus";
+export * from "./authResponse";
 export * from "./availabilityResponse";
 export * from "./availabilitySlot";
 export * from "./createAppointmentInput";
+export * from "./customer";
 export * from "./dashboardSummary";
 export * from "./errorResponse";
 export * from "./getAvailabilityParams";
@@ -18,6 +20,9 @@ export * from "./getUpcomingAppointmentsParams";
 export * from "./healthStatus";
 export * from "./listAppointmentsParams";
 export * from "./listAppointmentsStatus";
+export * from "./loginInput";
+export * from "./meResponse";
+export * from "./registerInput";
 export * from "./service";
 export * from "./stylist";
 export * from "./topService";

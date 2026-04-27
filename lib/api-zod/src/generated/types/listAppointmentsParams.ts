@@ -12,4 +12,8 @@ export type ListAppointmentsParams = {
   to?: string;
   status?: ListAppointmentsStatus;
   stylistId?: string;
+  /**
+   * If true, only return appointments owned by the logged-in customer
+   */
+  mine?: boolean;
 };

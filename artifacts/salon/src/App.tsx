@@ -12,6 +12,9 @@ import Stylists from "@/pages/stylists";
 import Admin from "@/pages/admin";
 import Buchen from "@/pages/buchen";
 import Buchung from "@/pages/buchung";
+import Login from "@/pages/login";
+import MeineTermine from "@/pages/meine-termine";
+import { AuthProvider } from "@/lib/auth";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +36,8 @@ function Router() {
         <Route path="/stylists" component={Stylists} />
         <Route path="/buchen" component={Buchen} />
         <Route path="/buchung/:id" component={Buchung} />
+        <Route path="/login" component={Login} />
+        <Route path="/meine-termine" component={MeineTermine} />
         <Route path="/admin" component={Admin} />
         <Route component={NotFound} />
       </Switch>
@@ -43,12 +48,14 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-          <Router />
-        </WouterRouter>
-        <Toaster />
-      </TooltipProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+            <Router />
+          </WouterRouter>
+          <Toaster />
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
