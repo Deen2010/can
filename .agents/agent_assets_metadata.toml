@@ -1,0 +1,32 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "2VSWB3Fwe_fzu5Z4FkV56"
+uri = "file://artifacts/salon/src/assets/stylist-1.png"
+type = "image"
+title = "Square portrait of stylist 1"
+
+[[generated]]
+id = "LKNdjUE2f0hZOk1NtbAXO"
+uri = "file://artifacts/salon/src/assets/stylist-2.png"
+type = "image"
+title = "Square portrait of stylist 2"
+
+[[generated]]
+id = "fxS6cGLKxJw5rkoh54khW"
+uri = "file://artifacts/salon/src/assets/stylist-3.png"
+type = "image"
+title = "Square portrait of stylist 3"
+
+[[generated]]
+id = "NSfCUysK0L2bz78dfXwPE"
+uri = "file://artifacts/salon/src/assets/salon-interior-1.png"
+type = "image"
+title = "Atmospheric salon interior"
+
+[[generated]]
+id = "HvG3s96UoSVHY67FN6Ttm"
+uri = "file://artifacts/salon/src/assets/salon-detail-1.png"
+type = "image"
+title = "Moody close up of hands working hair"

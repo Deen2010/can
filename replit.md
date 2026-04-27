@@ -2,7 +2,7 @@
 
 ## Overview
 
-pnpm workspace monorepo using TypeScript. Each package manages its own dependencies.
+pnpm workspace monorepo using TypeScript. Hosts the **Salon** artifact: a friseur website with online appointment booking, services catalog, stylist directory, and an admin dashboard. Editorial baby-blue aesthetic (Playfair Display + DM Sans), German UI.
 
 ## Stack
 

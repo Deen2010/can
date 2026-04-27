@@ -3,20 +3,29 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Salon API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: services
+    description: Salon service catalog
+  - name: stylists
+    description: Stylists / hairdressers
+  - name: appointments
+    description: Customer appointments
+  - name: availability
+    description: Slot availability lookup
+  - name: dashboard
+    description: Aggregated dashboard data
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +33,293 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /services:
+    get:
+      operationId: listServices
+      tags: [services]
+      summary: List all bookable services
+      responses:
+        "200":
+          description: Services
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Service"
+  /services/{id}:
+    get:
+      operationId: getService
+      tags: [services]
+      summary: Get a single service
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Service
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Service"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /stylists:
+    get:
+      operationId: listStylists
+      tags: [stylists]
+      summary: List stylists
+      responses:
+        "200":
+          description: Stylists
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Stylist"
+  /stylists/{id}:
+    get:
+      operationId: getStylist
+      tags: [stylists]
+      summary: Get a single stylist
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Stylist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Stylist"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /availability:
+    get:
+      operationId: getAvailability
+      tags: [availability]
+      summary: Get available start times for a given service, stylist, and date
+      parameters:
+        - name: serviceId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: stylistId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: date
+          in: query
+          required: true
+          description: ISO date (YYYY-MM-DD) in salon local time
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Available slots
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AvailabilityResponse"
+
+  /appointments:
+    get:
+      operationId: listAppointments
+      tags: [appointments]
+      summary: List appointments
+      parameters:
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [pending, confirmed, cancelled]
+        - name: stylistId
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Appointments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Appointment"
+    post:
+      operationId: createAppointment
+      tags: [appointments]
+      summary: Book an appointment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAppointmentInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Slot taken
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /appointments/{id}:
+    get:
+      operationId: getAppointment
+      tags: [appointments]
+      summary: Get an appointment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Appointment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: cancelAppointment
+      tags: [appointments]
+      summary: Cancel an appointment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Cancelled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /appointments/{id}/status:
+    patch:
+      operationId: updateAppointmentStatus
+      tags: [appointments]
+      summary: Update appointment status (confirm/cancel)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAppointmentStatusInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Aggregated salon dashboard numbers
+      responses:
+        "200":
+          description: Summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+  /dashboard/upcoming:
+    get:
+      operationId: getUpcomingAppointments
+      tags: [dashboard]
+      summary: Next upcoming appointments
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+      responses:
+        "200":
+          description: Upcoming
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Appointment"
+
 components:
   schemas:
     HealthStatus:
@@ -33,4 +329,201 @@ components:
           type: string
       required:
         - status
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+      required:
+        - error
+        - message
 
+    Service:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+        durationMinutes:
+          type: integer
+        priceCents:
+          type: integer
+      required:
+        - id
+        - name
+        - category
+        - description
+        - durationMinutes
+        - priceCents
+
+    Stylist:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+        bio:
+          type: string
+        imageUrl:
+          type: string
+        specialties:
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - name
+        - role
+        - bio
+        - imageUrl
+        - specialties
+
+    AvailabilityResponse:
+      type: object
+      properties:
+        date:
+          type: string
+        slots:
+          type: array
+          items:
+            $ref: "#/components/schemas/AvailabilitySlot"
+      required:
+        - date
+        - slots
+    AvailabilitySlot:
+      type: object
+      properties:
+        startsAt:
+          type: string
+        endsAt:
+          type: string
+        available:
+          type: boolean
+      required:
+        - startsAt
+        - endsAt
+        - available
+
+    Appointment:
+      type: object
+      properties:
+        id:
+          type: string
+        customerName:
+          type: string
+        customerEmail:
+          type: string
+        customerPhone:
+          type: string
+        notes:
+          type: string
+          nullable: true
+        serviceId:
+          type: string
+        stylistId:
+          type: string
+        startsAt:
+          type: string
+        endsAt:
+          type: string
+        status:
+          type: string
+          enum: [pending, confirmed, cancelled]
+        createdAt:
+          type: string
+        service:
+          $ref: "#/components/schemas/Service"
+        stylist:
+          $ref: "#/components/schemas/Stylist"
+      required:
+        - id
+        - customerName
+        - customerEmail
+        - customerPhone
+        - serviceId
+        - stylistId
+        - startsAt
+        - endsAt
+        - status
+        - createdAt
+
+    CreateAppointmentInput:
+      type: object
+      properties:
+        customerName:
+          type: string
+          minLength: 1
+        customerEmail:
+          type: string
+          minLength: 3
+        customerPhone:
+          type: string
+          minLength: 3
+        serviceId:
+          type: string
+        stylistId:
+          type: string
+        startsAt:
+          type: string
+        notes:
+          type: string
+      required:
+        - customerName
+        - customerEmail
+        - customerPhone
+        - serviceId
+        - stylistId
+        - startsAt
+
+    UpdateAppointmentStatusInput:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [pending, confirmed, cancelled]
+      required:
+        - status
+
+    DashboardSummary:
+      type: object
+      properties:
+        appointmentsToday:
+          type: integer
+        appointmentsThisWeek:
+          type: integer
+        upcomingCount:
+          type: integer
+        revenueThisWeekCents:
+          type: integer
+        topService:
+          oneOf:
+            - $ref: "#/components/schemas/TopService"
+            - type: "null"
+      required:
+        - appointmentsToday
+        - appointmentsThisWeek
+        - upcomingCount
+        - revenueThisWeekCents
+    TopService:
+      type: object
+      properties:
+        serviceId:
+          type: string
+        name:
+          type: string
+        bookings:
+          type: integer
+      required:
+        - serviceId
+        - name
+        - bookings
