@@ -38,8 +38,10 @@ export default function Buchen() {
   const [dateStr, setDateStr] = useState<string | null>(null);
   const [timeStr, setTimeStr] = useState<string | null>(null); // ISO string of startsAt
 
-  const { data: services } = useListServices();
-  const { data: stylists } = useListStylists();
+  const { data: servicesData } = useListServices();
+  const { data: stylistsData } = useListStylists();
+  const services = Array.isArray(servicesData) ? servicesData : [];
+  const stylists = Array.isArray(stylistsData) ? stylistsData : [];
 
   const { data: availability } = useGetAvailability(
     { serviceId: serviceId!, stylistId: stylistId!, date: dateStr! },
@@ -80,8 +82,8 @@ export default function Buchen() {
     return Array.from({ length: 60 }).map((_, i) => addDays(today, i));
   }, [today]);
 
-  const selectedService = services?.find(s => s.id === serviceId);
-  const selectedStylist = stylists?.find(s => s.id === stylistId);
+  const selectedService = services.find(s => s.id === serviceId);
+  const selectedStylist = stylists.find(s => s.id === stylistId);
 
   return (
     <PageTransition className="flex-1 max-w-4xl mx-auto w-full px-6 py-24">
@@ -109,7 +111,7 @@ export default function Buchen() {
             <PageTransition>
               <h2 className="font-serif text-4xl mb-8">Leistung wählen</h2>
               <div className="grid gap-px bg-border border border-border">
-                {services?.map(service => (
+                {services.map(service => (
                   <button
                     key={service.id}
                     onClick={() => {
@@ -140,7 +142,7 @@ export default function Buchen() {
               <button onClick={() => setStep(1)} className="text-xs uppercase tracking-widest text-muted-foreground mb-4 hover:text-primary">← Zurück</button>
               <h2 className="font-serif text-4xl mb-8">Friseur wählen</h2>
               <div className="grid gap-px bg-border border border-border">
-                {stylists?.map(stylist => (
+                {stylists.map(stylist => (
                   <button
                     key={stylist.id}
                     onClick={() => {
