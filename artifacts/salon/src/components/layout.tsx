@@ -15,7 +15,6 @@ export function Layout({ children }: LayoutProps) {
     { href: "/services", label: "Cuts & Preise" },
     { href: "/stylists", label: "Der Barber" },
     { href: "/buchen", label: "Termin buchen" },
-    { href: "/admin", label: "Verwaltung" },
   ];
 
   return (
