@@ -3,6 +3,9 @@ import { Link } from "wouter";
 import { ScissorIcon } from "@/components/scissor-icon";
 import interiorImg from "@/assets/salon-interior-1.png";
 import detailImg from "@/assets/salon-detail-1.png";
+import workCurly from "@assets/WhatsApp_Image_2026-04-27_at_4.10.09_PM_1777299203934.jpeg";
+import workBeard from "@assets/WhatsApp_Image_2026-04-27_at_4.10.08_PM_1777299203936.jpeg";
+import workFade from "@assets/WhatsApp_Image_2026-04-27_at_4.10.09_PM_(1)_1777299203937.jpeg";
 
 export default function Home() {
   return (
@@ -35,6 +38,48 @@ export default function Home() {
             <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-secondary border border-border flex items-center justify-center">
               <ScissorIcon className="w-12 h-12 text-border" />
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-border">
+        <div className="max-w-7xl mx-auto px-6 py-24">
+          <div className="flex items-end justify-between mb-12 gap-8">
+            <h2 className="font-serif text-3xl md:text-5xl">
+              <strong className="font-bold">Recent</strong> <em className="italic text-primary">work</em>
+            </h2>
+            <div className="text-xs uppercase tracking-widest text-muted-foreground hidden md:block">
+              Cuts by Can
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <figure className="space-y-3">
+              <div className="aspect-[3/4] overflow-hidden">
+                <img src={workCurly} alt="Curly Cut von Can" className="w-full h-full object-cover" />
+              </div>
+              <figcaption className="flex items-baseline justify-between text-xs uppercase tracking-widest text-muted-foreground">
+                <span>Curly · Tapered Nape</span>
+                <span>01</span>
+              </figcaption>
+            </figure>
+            <figure className="space-y-3">
+              <div className="aspect-[3/4] overflow-hidden">
+                <img src={workBeard} alt="Haarschnitt mit Bart von Can" className="w-full h-full object-cover" />
+              </div>
+              <figcaption className="flex items-baseline justify-between text-xs uppercase tracking-widest text-muted-foreground">
+                <span>Schnitt · Bart</span>
+                <span>02</span>
+              </figcaption>
+            </figure>
+            <figure className="space-y-3">
+              <div className="aspect-[3/4] overflow-hidden">
+                <img src={workFade} alt="Skin Fade von Can" className="w-full h-full object-cover" />
+              </div>
+              <figcaption className="flex items-baseline justify-between text-xs uppercase tracking-widest text-muted-foreground">
+                <span>Skin Fade</span>
+                <span>03</span>
+              </figcaption>
+            </figure>
           </div>
         </div>
       </section>
