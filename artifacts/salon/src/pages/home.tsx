@@ -78,7 +78,7 @@ export default function Home() {
                 </div>
                 <div className="absolute -top-4 -left-4 hidden md:flex w-20 h-20 bg-foreground text-background items-center justify-center rotate-[-12deg] border-2 border-foreground">
                   <div className="text-center">
-                    <div className="font-display text-xl leading-none">€20</div>
+                    <div className="font-display text-xl leading-none">€5</div>
                     <div className="text-[8px] uppercase tracking-widest mt-1">cut</div>
                   </div>
                 </div>
@@ -260,16 +260,16 @@ export default function Home() {
 
                 <ul className="space-y-4">
                   {[
-                    { name: "Classic Cut", desc: "Schnitt + Wash", price: "20" },
-                    { name: "Cut & Beard", desc: "Komplettpaket", price: "30" },
-                    { name: "Skin Fade", desc: "Präzision pur", price: "25" },
-                    { name: "Hot Towel Shave", desc: "Straight razor", price: "18" },
-                    { name: "Kids Cut", desc: "bis 12 Jahre", price: "12" },
+                    { name: "Haare", desc: "frischer Cut", price: "5" },
+                    { name: "Bart & Haare", desc: "Komplettpaket", price: "7" },
                   ].map((item) => (
                     <li key={item.name} className="flex items-baseline gap-3">
-                      <span className="font-bold text-foreground">{item.name}</span>
-                      <span className="flex-1 border-b border-dotted border-foreground/40 mx-2 mb-1" />
-                      <span className="font-display text-xl text-primary">€{item.price}</span>
+                      <div className="flex flex-col">
+                        <span className="font-bold text-foreground text-lg">{item.name}</span>
+                        <span className="text-[10px] uppercase tracking-widest text-foreground/50">{item.desc}</span>
+                      </div>
+                      <span className="flex-1 border-b border-dotted border-foreground/40 mx-2 mb-2" />
+                      <span className="font-display text-2xl text-primary">€{item.price}</span>
                     </li>
                   ))}
                 </ul>
