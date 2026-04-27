@@ -24,6 +24,7 @@ pnpm workspace monorepo using TypeScript. Hosts the **Salon** artifact: a friseu
 - Booking confirmation emails are sent on `POST /api/appointments`
 - `/meine-termine` lists `?mine=true` appointments for the logged-in customer
 - Admin gate at `/admin` is unrelated (password "cankann" in sessionStorage)
+- Admin dashboard offers two views for "Alle Termine": **Kalender** (week grid 09–22h, Mon–Sun, click block for detail panel with confirm/cancel) and **Liste** (filterable status list)
 
 ## Key Commands
 
