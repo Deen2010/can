@@ -25,6 +25,7 @@ pnpm workspace monorepo using TypeScript. Hosts the **Salon** artifact: a friseu
 - `/meine-termine` lists `?mine=true` appointments for the logged-in customer
 - Admin gate at `/admin` is unrelated (password "cankann" in sessionStorage)
 - Admin dashboard offers two views for "Alle Termine": **Kalender** (week grid 09–22h, Mon–Sun, click block for detail panel with confirm/cancel) and **Liste** (filterable status list)
+- Admin **Kunden** section lists all registered customers (with appointment counts) and allows inline edit of name/email/phone, setting a new password (invalidates that customer's sessions), and deletion (preserves appointments by nulling `customer_id`). Backed by `GET/PATCH/DELETE /api/customers` and `POST /api/customers/:id/password`.
 
 ## Key Commands
 

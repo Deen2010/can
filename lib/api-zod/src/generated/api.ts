@@ -362,6 +362,65 @@ export const GetMeResponse = zod.object({
 });
 
 /**
+ * @summary List all registered customers (admin)
+ */
+export const ListCustomersResponseItem = zod.object({
+  id: zod.string(),
+  email: zod.string(),
+  name: zod.string(),
+  phone: zod.string(),
+  emailVerifiedAt: zod.string().nullish(),
+  createdAt: zod.string(),
+  appointmentCount: zod.number(),
+  lastAppointmentAt: zod.string().nullish(),
+});
+export const ListCustomersResponse = zod.array(ListCustomersResponseItem);
+
+/**
+ * @summary Update customer profile (admin)
+ */
+export const UpdateCustomerParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const updateCustomerBodyEmailMin = 3;
+
+export const UpdateCustomerBody = zod.object({
+  email: zod.string().min(updateCustomerBodyEmailMin).optional(),
+  name: zod.string().min(1).optional(),
+  phone: zod.string().optional(),
+});
+
+export const UpdateCustomerResponse = zod.object({
+  id: zod.string(),
+  email: zod.string(),
+  name: zod.string(),
+  phone: zod.string(),
+  emailVerifiedAt: zod.string().nullish(),
+  createdAt: zod.string(),
+});
+
+/**
+ * @summary Delete a customer (admin)
+ */
+export const DeleteCustomerParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+/**
+ * @summary Set new password for a customer (admin)
+ */
+export const SetCustomerPasswordParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const setCustomerPasswordBodyPasswordMin = 6;
+
+export const SetCustomerPasswordBody = zod.object({
+  password: zod.string().min(setCustomerPasswordBodyPasswordMin),
+});
+
+/**
  * @summary Next upcoming appointments
  */
 export const getUpcomingAppointmentsQueryLimitMax = 50;

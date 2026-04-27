@@ -5,9 +5,15 @@ import {
   useListAppointments,
   useUpdateAppointmentStatus,
   useCancelAppointment,
+  useListCustomers,
+  useUpdateCustomer,
+  useDeleteCustomer,
+  useSetCustomerPassword,
   getGetDashboardSummaryQueryKey,
   getGetUpcomingAppointmentsQueryKey,
   getListAppointmentsQueryKey,
+  getListCustomersQueryKey,
+  type AdminCustomer,
 } from "@workspace/api-client-react";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -426,6 +432,340 @@ function WeekCalendar({
   );
 }
 
+function CustomersSection() {
+  const queryClient = useQueryClient();
+  const { data: customers } = useListCustomers();
+  const updateCustomer = useUpdateCustomer();
+  const setPassword = useSetCustomerPassword();
+  const deleteCustomer = useDeleteCustomer();
+
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [pwId, setPwId] = useState<string | null>(null);
+  const [pwValue, setPwValue] = useState("");
+  const [pwSavedFor, setPwSavedFor] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [draft, setDraft] = useState<{
+    name: string;
+    email: string;
+    phone: string;
+  }>({ name: "", email: "", phone: "" });
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const list = Array.isArray(customers) ? (customers as AdminCustomer[]) : [];
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return list;
+    return list.filter(
+      (c) =>
+        c.name.toLowerCase().includes(q) ||
+        c.email.toLowerCase().includes(q) ||
+        c.phone.toLowerCase().includes(q),
+    );
+  }, [list, search]);
+
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: getListCustomersQueryKey() });
+    queryClient.invalidateQueries({ queryKey: getListAppointmentsQueryKey() });
+  };
+
+  const startEdit = (c: AdminCustomer) => {
+    setEditingId(c.id);
+    setDraft({ name: c.name, email: c.email, phone: c.phone ?? "" });
+    setErrorMsg(null);
+    setPwId(null);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setErrorMsg(null);
+  };
+
+  const saveEdit = (c: AdminCustomer) => {
+    setErrorMsg(null);
+    updateCustomer.mutate(
+      {
+        id: c.id,
+        data: {
+          name: draft.name !== c.name ? draft.name : undefined,
+          email: draft.email !== c.email ? draft.email : undefined,
+          phone: draft.phone !== (c.phone ?? "") ? draft.phone : undefined,
+        },
+      },
+      {
+        onSuccess: () => {
+          setEditingId(null);
+          invalidate();
+        },
+        onError: (err: any) => {
+          const message =
+            err?.response?.data?.message ??
+            err?.message ??
+            "Speichern fehlgeschlagen";
+          setErrorMsg(message);
+        },
+      },
+    );
+  };
+
+  const startPassword = (c: AdminCustomer) => {
+    setPwId(c.id);
+    setPwValue("");
+    setPwSavedFor(null);
+    setEditingId(null);
+  };
+
+  const savePassword = (c: AdminCustomer) => {
+    if (pwValue.length < 6) {
+      setErrorMsg("Passwort muss mindestens 6 Zeichen haben");
+      return;
+    }
+    setErrorMsg(null);
+    setPassword.mutate(
+      { id: c.id, data: { password: pwValue } },
+      {
+        onSuccess: () => {
+          setPwId(null);
+          setPwValue("");
+          setPwSavedFor(c.id);
+          window.setTimeout(() => setPwSavedFor(null), 2500);
+        },
+        onError: (err: any) => {
+          setErrorMsg(
+            err?.response?.data?.message ?? "Passwort konnte nicht gesetzt werden",
+          );
+        },
+      },
+    );
+  };
+
+  const removeCustomer = (c: AdminCustomer) => {
+    if (
+      !window.confirm(
+        `Kunde "${c.name}" (${c.email}) wirklich löschen? Bestehende Termine bleiben erhalten, werden aber von diesem Konto getrennt.`,
+      )
+    ) {
+      return;
+    }
+    deleteCustomer.mutate(
+      { id: c.id },
+      {
+        onSuccess: () => {
+          if (editingId === c.id) setEditingId(null);
+          if (pwId === c.id) setPwId(null);
+          invalidate();
+        },
+      },
+    );
+  };
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-5 pb-2 border-b-2 border-foreground gap-4 flex-wrap">
+        <h2 className="text-[10px] uppercase tracking-[0.3em] text-primary font-bold">
+          Kunden ({list.length})
+        </h2>
+        <input
+          type="search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Suchen…"
+          data-testid="input-customer-search"
+          className="border-2 border-foreground bg-background px-3 py-1.5 text-sm w-64 focus:outline-none focus:border-primary"
+        />
+      </div>
+
+      {errorMsg && (
+        <div
+          className="border-2 border-destructive bg-destructive/10 text-destructive px-4 py-2 mb-4 text-sm"
+          data-testid="text-customer-error"
+        >
+          {errorMsg}
+        </div>
+      )}
+
+      <div className="border-2 border-foreground bg-background overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="bg-secondary text-[9px] uppercase tracking-[0.25em] font-bold text-muted-foreground border-b-2 border-foreground">
+              <th className="text-left px-4 py-3">Name</th>
+              <th className="text-left px-4 py-3">E-Mail</th>
+              <th className="text-left px-4 py-3">Telefon</th>
+              <th className="text-left px-4 py-3">Termine</th>
+              <th className="text-left px-4 py-3">Registriert</th>
+              <th className="text-right px-4 py-3">Aktionen</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.length === 0 && (
+              <tr>
+                <td
+                  colSpan={6}
+                  className="px-4 py-6 text-center text-muted-foreground"
+                >
+                  {list.length === 0
+                    ? "Noch keine registrierten Kunden"
+                    : "Keine Treffer"}
+                </td>
+              </tr>
+            )}
+            {filtered.map((c) => {
+              const isEditing = editingId === c.id;
+              const isSetting = pwId === c.id;
+              return (
+                <tr
+                  key={c.id}
+                  className="border-b border-border last:border-b-0 hover:bg-secondary/40"
+                  data-testid={`row-customer-${c.id}`}
+                >
+                  <td className="px-4 py-3 align-top">
+                    {isEditing ? (
+                      <input
+                        value={draft.name}
+                        onChange={(e) =>
+                          setDraft((d) => ({ ...d, name: e.target.value }))
+                        }
+                        className="border border-foreground bg-background px-2 py-1 w-full focus:outline-none focus:border-primary"
+                        data-testid={`input-edit-name-${c.id}`}
+                      />
+                    ) : (
+                      <div className="font-serif font-bold">{c.name}</div>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 align-top">
+                    {isEditing ? (
+                      <input
+                        type="email"
+                        value={draft.email}
+                        onChange={(e) =>
+                          setDraft((d) => ({ ...d, email: e.target.value }))
+                        }
+                        className="border border-foreground bg-background px-2 py-1 w-full focus:outline-none focus:border-primary"
+                        data-testid={`input-edit-email-${c.id}`}
+                      />
+                    ) : (
+                      <span className="text-muted-foreground">{c.email}</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 align-top">
+                    {isEditing ? (
+                      <input
+                        value={draft.phone}
+                        onChange={(e) =>
+                          setDraft((d) => ({ ...d, phone: e.target.value }))
+                        }
+                        placeholder="—"
+                        className="border border-foreground bg-background px-2 py-1 w-full focus:outline-none focus:border-primary"
+                        data-testid={`input-edit-phone-${c.id}`}
+                      />
+                    ) : (
+                      <span className="text-muted-foreground">
+                        {c.phone || "—"}
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 align-top">
+                    <div>{c.appointmentCount}</div>
+                    {c.lastAppointmentAt && (
+                      <div className="text-[10px] uppercase tracking-widest text-muted-foreground mt-0.5">
+                        zuletzt{" "}
+                        {format(new Date(c.lastAppointmentAt), "dd.MM.yyyy", {
+                          locale: de,
+                        })}
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 align-top text-muted-foreground">
+                    {format(new Date(c.createdAt), "dd.MM.yyyy", { locale: de })}
+                  </td>
+                  <td className="px-4 py-3 align-top">
+                    {isEditing ? (
+                      <div className="flex items-center gap-3 justify-end text-[10px] uppercase tracking-[0.2em] font-bold">
+                        <button
+                          onClick={() => saveEdit(c)}
+                          disabled={updateCustomer.isPending}
+                          className="text-primary hover:underline disabled:opacity-50"
+                          data-testid={`button-save-${c.id}`}
+                        >
+                          Speichern
+                        </button>
+                        <button
+                          onClick={cancelEdit}
+                          className="text-muted-foreground hover:text-foreground"
+                          data-testid={`button-cancel-${c.id}`}
+                        >
+                          Abbrechen
+                        </button>
+                      </div>
+                    ) : isSetting ? (
+                      <div className="flex items-center gap-2 justify-end">
+                        <input
+                          type="text"
+                          value={pwValue}
+                          onChange={(e) => setPwValue(e.target.value)}
+                          placeholder="Neues Passwort"
+                          className="border border-foreground bg-background px-2 py-1 w-44 focus:outline-none focus:border-primary text-xs"
+                          data-testid={`input-password-${c.id}`}
+                        />
+                        <button
+                          onClick={() => savePassword(c)}
+                          disabled={setPassword.isPending}
+                          className="text-primary text-[10px] uppercase tracking-[0.2em] font-bold hover:underline disabled:opacity-50"
+                          data-testid={`button-save-password-${c.id}`}
+                        >
+                          OK
+                        </button>
+                        <button
+                          onClick={() => {
+                            setPwId(null);
+                            setPwValue("");
+                          }}
+                          className="text-muted-foreground text-[10px] uppercase tracking-[0.2em] font-bold hover:text-foreground"
+                          data-testid={`button-cancel-password-${c.id}`}
+                        >
+                          Abbrechen
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-3 justify-end text-[10px] uppercase tracking-[0.2em] font-bold">
+                        {pwSavedFor === c.id && (
+                          <span className="text-primary normal-case tracking-normal text-xs italic">
+                            Passwort gesetzt
+                          </span>
+                        )}
+                        <button
+                          onClick={() => startEdit(c)}
+                          className="text-foreground hover:text-primary"
+                          data-testid={`button-edit-${c.id}`}
+                        >
+                          Bearbeiten
+                        </button>
+                        <button
+                          onClick={() => startPassword(c)}
+                          className="text-foreground hover:text-primary"
+                          data-testid={`button-password-${c.id}`}
+                        >
+                          Passwort
+                        </button>
+                        <button
+                          onClick={() => removeCustomer(c)}
+                          className="text-destructive hover:underline"
+                          data-testid={`button-delete-${c.id}`}
+                        >
+                          Löschen
+                        </button>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 function Dashboard() {
   const [statusFilter, setStatusFilter] = useState<string>("Alle");
   const [appointmentsView, setAppointmentsView] = useState<"calendar" | "list">("calendar");
@@ -592,6 +932,11 @@ function Dashboard() {
           </div>
         </section>
       </div>
+
+      {/* Kunden */}
+      <section className="mb-14">
+        <CustomersSection />
+      </section>
 
       {/* Alle Termine */}
       <section>

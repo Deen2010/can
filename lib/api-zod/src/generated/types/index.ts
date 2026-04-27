@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from "./adminCustomer";
 export * from "./appointment";
 export * from "./appointmentStatus";
 export * from "./authResponse";
@@ -24,7 +25,9 @@ export * from "./loginInput";
 export * from "./meResponse";
 export * from "./registerInput";
 export * from "./service";
+export * from "./setPasswordInput";
 export * from "./stylist";
 export * from "./topService";
 export * from "./updateAppointmentStatusInput";
 export * from "./updateAppointmentStatusInputStatus";
+export * from "./updateCustomerInput";

@@ -6,6 +6,7 @@ import availabilityRouter from "./availability";
 import appointmentsRouter from "./appointments";
 import dashboardRouter from "./dashboard";
 import authRouter from "./auth";
+import customersRouter from "./customers";
 
 const router: IRouter = Router();
 
@@ -16,5 +17,6 @@ router.use(availabilityRouter);
 router.use(appointmentsRouter);
 router.use(dashboardRouter);
 router.use(authRouter);
+router.use(customersRouter);
 
 export default router;

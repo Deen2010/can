@@ -88,6 +88,30 @@ export interface Customer {
   createdAt: string;
 }
 
+export interface AdminCustomer {
+  id: string;
+  email: string;
+  name: string;
+  phone: string;
+  emailVerifiedAt?: string | null;
+  createdAt: string;
+  appointmentCount: number;
+  lastAppointmentAt?: string | null;
+}
+
+export interface UpdateCustomerInput {
+  /** @minLength 3 */
+  email?: string;
+  /** @minLength 1 */
+  name?: string;
+  phone?: string;
+}
+
+export interface SetPasswordInput {
+  /** @minLength 6 */
+  password: string;
+}
+
 export interface RegisterInput {
   /** @minLength 3 */
   email: string;
